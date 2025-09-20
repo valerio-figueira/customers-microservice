@@ -3,11 +3,7 @@ import { Document } from './document.entity';
 import { Email } from './email.entity';
 import { Phone } from './phone.entity';
 import { Gender } from './gender.entity';
-import {
-  CustomerDocumentInterface,
-  CustomerInterface,
-} from './interfaces/customer.interface';
-import { IdGeneratorInterface } from '../../app/ports/id-generator.interface';
+import { CustomerInterface } from './interfaces/customer.interface';
 import { ApplicationValidationError } from '../../app/commons/errors/errors';
 
 export class Customer implements CustomerInterface {
@@ -61,27 +57,6 @@ export class Customer implements CustomerInterface {
 
   public get documents(): Document[] {
     return this._documents;
-  }
-
-  public addDocuments(
-    docs: Array<CustomerDocumentInterface & { id: string }>,
-    idGenerator?: IdGeneratorInterface,
-  ): this {
-    docs.forEach((d) => {
-      const newDoc = new Document(
-        this._id,
-        d.type,
-        d.value,
-        d.issuingAuthority,
-        d.issueDate,
-        d.expirationDate,
-      );
-      if (idGenerator) {
-        newDoc.withId(idGenerator.generate('doc'));
-      }
-      this._documents.push(newDoc);
-    });
-    return this;
   }
 
   public isOver18(): boolean {
