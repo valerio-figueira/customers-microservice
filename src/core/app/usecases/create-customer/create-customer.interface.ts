@@ -1,10 +1,10 @@
 import {
   CreateDocumentInput,
   CreateDocumentOutput,
-} from '../../create-document/interfaces/create-document-usecase.interface';
-import { GenderEnum } from '../../../../domain/enums/gender.enum';
+} from '../create-document/create-document.interface';
+import { GenderEnum } from '../../../domain/enums/gender.enum';
 
-export interface CreateCustomerUseCaseInterface {
+export interface CreateCustomerInterface {
   create: (input: CreateCustomerInput) => Promise<CreateCustomerOutput>;
 }
 

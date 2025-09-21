@@ -1,8 +1,8 @@
 import {
   CreateCustomerInput,
   CreateCustomerOutput,
-  CreateCustomerUseCaseInterface,
-} from './interfaces/create-customer.usecase.interface';
+  CreateCustomerInterface,
+} from './create-customer.interface';
 import { PasswordHasherInterface } from '../../ports/password-hasher.interface';
 import {
   RepositoryFactory,
@@ -13,7 +13,7 @@ import { Document } from '../../../domain/entities/document.entity';
 import { CustomerBuilder } from '../../../domain/builders/customer.builder';
 import { ApplicationValidationError } from '../../commons/errors/errors';
 
-export class CreateCustomerUseCase implements CreateCustomerUseCaseInterface {
+export class CreateCustomerUseCase implements CreateCustomerInterface {
   constructor(
     private readonly unitOfWork: UnitOfWorkInterface,
     private readonly passwordHasher: PasswordHasherInterface,
