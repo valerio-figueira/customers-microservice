@@ -3,28 +3,31 @@ import {
   ApplicationConflictError,
   ApplicationValidationError,
   ApplicationInternalError,
-  ApplicationError,
 } from '../../../core/app/commons/errors/errors';
-import { Logger } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 
-type HttpErrorResponse = { status: number; instance: ApplicationError };
+type HttpErrorResponse = { status: number; message: string };
 
-export class HttpErrorMapper {
+export class HttpExceptionMapper {
   static toHttp(error: unknown): HttpErrorResponse {
     if (error instanceof ApplicationNotFoundError) {
-      return { status: 404, instance: error };
+      return { status: 404, message: error.message };
     }
 
     if (error instanceof ApplicationConflictError) {
-      return { status: 409, instance: error };
+      return { status: 409, message: error.message };
     }
 
     if (error instanceof ApplicationValidationError) {
-      return { status: 400, instance: error };
+      return { status: 400, message: error.message };
     }
 
     if (error instanceof ApplicationInternalError) {
-      return { status: 500, instance: error };
+      return { status: 500, message: error.message };
+    }
+
+    if (error instanceof NotFoundException) {
+      return { status: 404, message: error.message };
     }
 
     // fallback para erros não mapeados
@@ -34,10 +37,7 @@ export class HttpErrorMapper {
 
     return {
       status: 500,
-      instance: {
-        code: 'UNEXPECTED_ERROR',
-        message: 'Erro interno de servidor.',
-      },
+      message: 'Erro interno de servidor.',
     };
   }
 }

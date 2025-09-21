@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { HttpErrorMapper } from './http-error.mapper';
+import { HttpExceptionMapper } from './http-exception.mapper';
 
 @Catch()
 export class ApplicationErrorFilter implements ExceptionFilter {
@@ -8,12 +8,11 @@ export class ApplicationErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
 
-    const { status, instance } = HttpErrorMapper.toHttp(exception);
+    const { status, message } = HttpExceptionMapper.toHttp(exception);
 
     res.status(status).json({
       status,
-      code: instance.code,
-      message: instance.message,
+      message,
     });
   }
 }
