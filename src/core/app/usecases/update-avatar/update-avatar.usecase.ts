@@ -17,7 +17,8 @@ export class UpdateAvatarUseCase implements UpdateAvatarInterface {
   public async update(input: UpdateAvatarInput): Promise<UpdateAvatarOutput> {
     const { customerId, file, contentType } = input;
 
-    const avatarPath = `profiles/${customerId}.jpg`;
+    const type = contentType?.split(/\//)[1];
+    const avatarPath = `profiles/${customerId}.${type}`;
     const avatar = new Avatar({ path: avatarPath });
 
     return this.unitOfWork.execute(async (repositories) => {
@@ -26,7 +27,7 @@ export class UpdateAvatarUseCase implements UpdateAvatarInterface {
         throw new ApplicationValidationError('Cliente não encontrado.');
       }
 
-      await this.fileStorage.upload(avatarPath, file, { contentType });
+      await this.fileStorage.upload(avatar.path, file, { contentType });
       return repositories.customers.updateAvatarPath(customerId, avatarPath);
     });
   }

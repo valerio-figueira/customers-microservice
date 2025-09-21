@@ -6,8 +6,16 @@ export interface UpdateAvatarInterface {
 
 export interface UpdateAvatarInput {
   customerId: string;
-  file: Buffer; // Buffer, stream ou até string base64
-  contentType?: string; // opcional (image/jpeg, image/png, etc.)
+
+  /*
+   * Buffer, stream ou até string base64
+   */
+  file: Buffer;
+
+  /*
+   * ContentType: (image/jpeg, image/png, etc.)
+   */
+  contentType: string;
 }
 
 export type UpdateAvatarOutput = Omit<PersistedCustomerInterface, 'password'>;
