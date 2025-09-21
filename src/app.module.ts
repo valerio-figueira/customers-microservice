@@ -13,16 +13,23 @@ import {
   CREATE_CUSTOMER_USECASE,
   CUSTOMER_REPOSITORY,
   DOCUMENT_REPOSITORY,
+  FILE_STORAGE,
   ID_GENERATOR,
   PASSWORD_HASHER,
   UNIT_OF_WORK,
+  UPDATE_AVATAR,
 } from './infra/tokens';
 import { IdGenerator } from './infra/utils/id-generator.util';
 import { BcryptPasswordHasher } from './infra/utils/password-hasher.util';
+import { UpdateAvatarUseCase } from './core/app/usecases/update-avatar/update-avatar.usecase';
+import { FileStorageInterface } from './core/app/ports/file-storage.interface';
+import { S3AwsConnection } from './infra/aws/s3-aws.connection';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AvatarController } from './infra/http/avatar.controller';
 
 @Module({
-  imports: [PrismaModule],
-  controllers: [CustomersController],
+  imports: [PrismaModule, ConfigModule.forRoot()],
+  controllers: [CustomersController, AvatarController],
   providers: [
     PrismaConnection,
     {
@@ -46,6 +53,20 @@ import { BcryptPasswordHasher } from './infra/utils/password-hasher.util';
     {
       provide: PASSWORD_HASHER,
       useFactory: () => new BcryptPasswordHasher(),
+    },
+    {
+      provide: FILE_STORAGE,
+      useFactory: (configService: ConfigService) =>
+        new S3AwsConnection(configService),
+      inject: [ConfigService],
+    },
+    {
+      provide: UPDATE_AVATAR,
+      useFactory: (
+        unitOfWork: UnitOfWorkInterface,
+        fileStorage: FileStorageInterface,
+      ) => new UpdateAvatarUseCase(unitOfWork, fileStorage),
+      inject: [UNIT_OF_WORK, FILE_STORAGE],
     },
     {
       provide: CREATE_CUSTOMER_USECASE,

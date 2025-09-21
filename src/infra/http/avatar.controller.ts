@@ -18,7 +18,7 @@ import type {
 import { UPDATE_AVATAR } from '../tokens';
 
 @Controller()
-export class CustomerAvatarController {
+export class AvatarController {
   constructor(
     @Inject(UPDATE_AVATAR)
     private readonly updateAvatarUseCase: UpdateAvatarInterface,
@@ -35,7 +35,7 @@ export class CustomerAvatarController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1000 }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 }), // 1 MB
           new FileTypeValidator({ fileType: /image\/(png|jpeg|webp)/ }),
         ],
       }),
