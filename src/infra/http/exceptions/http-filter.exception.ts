@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { HttpExceptionMapper } from './http-exception.mapper';
 
@@ -9,6 +9,10 @@ export class ApplicationErrorFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
 
     const { status, message } = HttpExceptionMapper.toHttp(exception);
+
+    new Logger().error(
+      `[Customers Microservice] EXCEPTION: ${JSON.stringify({ status, message })}`,
+    );
 
     res.status(status).json({
       status,
