@@ -50,11 +50,20 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
         dateOfBirth: true,
         email: true,
         documents: true,
+        avatarPath: true,
         createdAt: true,
         updatedAt: true,
         deletedAt: true,
       },
     });
+  }
+
+  public async exists(id: string): Promise<boolean> {
+    const exists = await this.prisma.customer.findFirst({
+      where: { id },
+      select: { id: true },
+    });
+    return !!exists;
   }
 
   public async existsEmail(email: string): Promise<boolean> {
@@ -63,5 +72,28 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
       select: { id: true },
     });
     return !!exists;
+  }
+
+  public async updateAvatarPath(
+    id: string,
+    avatarPath: string,
+  ): Promise<Omit<PersistedCustomerInterface, 'password'>> {
+    return this.prisma.customer.update({
+      where: { id },
+      data: { avatarPath },
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+        phone: true,
+        dateOfBirth: true,
+        email: true,
+        avatarPath: true,
+        documents: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+      },
+    });
   }
 }

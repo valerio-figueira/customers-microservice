@@ -17,5 +17,12 @@ export interface CustomerRepositoryInterface {
     id: string,
   ): Promise<Omit<PersistedCustomerInterface, 'password'> | null>;
 
+  exists(id: string): Promise<boolean>;
+
   existsEmail(email: string): Promise<boolean>;
+
+  updateAvatarPath(
+    id: string,
+    avatarPath: string,
+  ): Promise<Omit<PersistedCustomerInterface, 'password'>>;
 }
