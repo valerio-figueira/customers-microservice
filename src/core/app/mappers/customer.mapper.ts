@@ -9,7 +9,10 @@ export class CustomerMapper {
    */
   static toPersistence(
     customer: CustomerInterface,
-  ): Omit<PersistedCustomerInterface, 'documents'> {
+  ): Omit<
+    PersistedCustomerInterface,
+    'documents' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {
     return {
       id: customer.id,
       name: customer.name,
@@ -18,9 +21,6 @@ export class CustomerMapper {
       phone: customer.phone.value,
       gender: customer.gender.value,
       dateOfBirth: customer.dateOfBirth,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
     };
   }
 }
