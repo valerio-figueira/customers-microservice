@@ -21,6 +21,7 @@ export class CustomerMapper {
       phone: customer.phone.value,
       gender: customer.gender.value,
       dateOfBirth: customer.dateOfBirth,
+      avatarPath: customer.avatar.path,
     };
   }
 }

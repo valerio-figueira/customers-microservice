@@ -5,12 +5,13 @@ import { Phone } from './phone.entity';
 import { Gender } from './gender.entity';
 import { CustomerInterface } from './interfaces/customer.interface';
 import { ApplicationValidationError } from '../../app/commons/errors/errors';
+import { Avatar } from './avatar.entity';
 
 export class Customer implements CustomerInterface {
   private readonly _addresses: Address[] = [];
 
   constructor(
-    private _id: string,
+    private readonly _id: string,
     private readonly _name: string,
     private readonly _email: Email,
     private readonly _password: string,
@@ -18,6 +19,7 @@ export class Customer implements CustomerInterface {
     private readonly _gender: Gender,
     private readonly _dateOfBirth: Date,
     private readonly _documents: Document[] = [],
+    private _avatar: Avatar = new Avatar(),
   ) {}
 
   public get id(): string {
@@ -57,6 +59,18 @@ export class Customer implements CustomerInterface {
 
   public get documents(): Document[] {
     return this._documents;
+  }
+
+  public get avatar(): Avatar {
+    return this._avatar;
+  }
+
+  public get avatarPath(): string | null {
+    return this._avatar.path;
+  }
+
+  public withAvatar(avatar: Avatar): void {
+    this._avatar = avatar;
   }
 
   public isOver18(): boolean {
