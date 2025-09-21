@@ -1,3 +1,5 @@
+import { ApplicationValidationError } from '../../app/commons/errors/errors';
+
 export class Phone {
   public readonly value: string;
 
@@ -5,7 +7,7 @@ export class Phone {
     const cleaned = Phone.clean(value);
 
     if (!Phone.isValid(cleaned)) {
-      throw new Error('Telefone inválido.');
+      throw new ApplicationValidationError('Telefone inválido.');
     }
 
     this.value = cleaned;

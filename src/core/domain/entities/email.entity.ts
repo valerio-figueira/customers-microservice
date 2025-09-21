@@ -1,15 +1,17 @@
+import { ApplicationValidationError } from '../../app/commons/errors/errors';
+
 export class Email {
   public readonly value: string;
 
   constructor(value: string) {
     if (!Email.isValid(value)) {
-      throw new Error('Email inválido.');
+      throw new ApplicationValidationError('Email inválido.');
     }
     this.value = value;
   }
 
   private static isValid(value: string): boolean {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regex = /^[^\s@]{4,}@[^\s@.]{3,}\.[^\s@]{2,}$/;
     return regex.test(value);
   }
 }
