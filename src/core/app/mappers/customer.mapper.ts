@@ -17,7 +17,7 @@ export class CustomerMapper {
       id: customer.id,
       name: customer.name,
       email: customer.email.value,
-      password: customer.password,
+      password: customer.password.hash,
       phone: customer.phone.value,
       gender: customer.gender.value,
       dateOfBirth: customer.dateOfBirth,

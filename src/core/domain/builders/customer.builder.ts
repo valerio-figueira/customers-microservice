@@ -7,16 +7,23 @@ import { GenderEnum } from '../enums/gender.enum';
 import { CustomerDocumentInterface } from '../entities/interfaces/customer.interface';
 import { IdGeneratorInterface } from '../../app/ports/id-generator.interface';
 import { ApplicationValidationError } from '../../app/commons/errors/errors';
+import { Avatar } from '../entities/avatar.entity';
+import { Address } from '../entities/address.entity';
+import { Password } from '../entities/password.entity';
 
 export class CustomerBuilder {
   private _id: string;
   private _name: string;
   private _email: Email;
-  private _password: string;
+  private _password: Password;
   private _phone: Phone;
   private _gender: Gender;
   private _dateOfBirth: Date;
   private _documents: Document[] = [];
+  private _avatar: Avatar = new Avatar();
+  private _addresses: Address[] = [];
+
+  constructor(private readonly idGenerator: IdGeneratorInterface) {}
 
   public withId(id: string): this {
     this._id = id;
@@ -33,8 +40,8 @@ export class CustomerBuilder {
     return this;
   }
 
-  public withPassword(hash: string): this {
-    this._password = hash;
+  public withPassword(password: Password): this {
+    this._password = password;
     return this;
   }
 
@@ -60,26 +67,23 @@ export class CustomerBuilder {
 
   public withDocuments(
     documents: Array<CustomerDocumentInterface & { id?: string }>,
-    idGenerator?: IdGeneratorInterface,
   ): this {
-    const customerId = this._id;
-    if (!customerId) {
+    if (!this._id) {
       throw new ApplicationValidationError(
         'Não é possível adicionar documentos sem o id de usuário.',
       );
     }
     documents.forEach((d) => {
-      const newDoc = new Document(
-        customerId,
-        d.type,
-        d.value,
-        d.issuingAuthority,
-        d.issueDate,
-        d.expirationDate,
-      );
-      if (idGenerator) {
-        newDoc.withId(idGenerator.generate('doc'));
-      }
+      const newDoc = new Document({
+        id: d.id ? d.id : this.idGenerator.generate('doc'),
+        customerId: this._id,
+        type: d.type,
+        value: d.value,
+        issuingAuthority: d.issuingAuthority,
+        issueDate: d.issueDate,
+        expirationDate: d.expirationDate,
+      });
+
       this._documents.push(newDoc);
     });
     return this;
@@ -90,16 +94,18 @@ export class CustomerBuilder {
       this.validate();
     }
 
-    return new Customer(
-      this._id,
-      this._name,
-      this._email,
-      this._password,
-      this._phone,
-      this._gender,
-      this._dateOfBirth,
-      this._documents,
-    );
+    return new Customer({
+      id: this._id,
+      name: this._name,
+      email: this._email,
+      password: this._password,
+      phone: this._phone,
+      gender: this._gender,
+      dateOfBirth: this._dateOfBirth,
+      documents: this._documents,
+      avatar: this._avatar,
+      addresses: this._addresses,
+    });
   }
 
   private validate(): void {

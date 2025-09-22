@@ -6,20 +6,25 @@ import { PersistedDocumentInterface } from './document.interface';
 import { GenderEnum } from '../../enums/gender.enum';
 import { DocumentTypeEnum } from '../../enums/document-type.enum';
 import { Avatar } from '../avatar.entity';
+import { Address } from '../address.entity';
+import { Password } from '../password.entity';
 
 export interface CustomerInterface {
   readonly id: string;
   readonly name: string;
   readonly email: Email;
-  readonly password: string;
+  readonly password: Password;
   readonly phone: Phone;
   readonly gender: Gender;
   readonly dateOfBirth: Date;
   readonly documents: Document[];
   readonly avatar: Avatar;
+  readonly addresses: Address[];
 
   isOver18(): boolean;
 }
+
+export type CustomerAttributes = Omit<CustomerInterface, 'isOver18'>;
 
 export interface PersistedCustomerInterface {
   readonly id: string;

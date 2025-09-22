@@ -1,7 +1,4 @@
-import {
-  ApplicationNotFoundError,
-  ApplicationValidationError,
-} from '../../app/commons/errors/errors';
+import { ApplicationValidationError } from '../../app/commons/errors/errors';
 import { AvatarInterface } from './interfaces/avatar.interface';
 
 export class Avatar implements AvatarInterface {
@@ -28,12 +25,7 @@ export class Avatar implements AvatarInterface {
     this._uploadedAt = uploadedAt;
   }
 
-  public get path(): string {
-    if (!this._path) {
-      throw new ApplicationNotFoundError(
-        'O caminho para o avatar não foi encontrado.',
-      );
-    }
+  public get path(): string | null {
     return this._path;
   }
 
@@ -55,6 +47,15 @@ export class Avatar implements AvatarInterface {
 
   public equals(other: Avatar): boolean {
     return this._path === other.path;
+  }
+
+  public getPathOrThrow(): string {
+    if (!this._path) {
+      throw new ApplicationValidationError(
+        'O caminho do avatar é obrigatório.',
+      );
+    }
+    return this._path;
   }
 
   private static isValidPath(path: string): boolean {

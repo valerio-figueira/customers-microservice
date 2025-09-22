@@ -3,7 +3,7 @@ import { DocumentTypeEnum } from '../../enums/document-type.enum';
 export interface DocumentInterface {
   readonly id: string;
   readonly customerId: string;
-  readonly type: DocumentTypeEnum | 'CPF' | 'RG' | 'CNPJ' | 'CNH' | 'PASSPORT';
+  readonly type: DocumentTypes;
   readonly value: string;
   readonly issuingAuthority: string | null;
   readonly issueDate: Date | null;
@@ -17,6 +17,16 @@ export interface DocumentInterface {
    */
   isExpired(): boolean;
 }
+
+export type DocumentTypes =
+  | DocumentTypeEnum
+  | 'CPF'
+  | 'RG'
+  | 'CNPJ'
+  | 'CNH'
+  | 'PASSPORT';
+
+export type DocumentAttributes = Omit<DocumentInterface, 'isExpired'>;
 
 export interface PersistedDocumentInterface
   extends Omit<DocumentInterface, 'isExpired'> {
