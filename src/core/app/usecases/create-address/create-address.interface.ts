@@ -1,4 +1,4 @@
-export interface CreateAddressUseCaseInterface {
+export interface CreateAddressInterface {
   create: (input: CreateAddressInput) => Promise<CreateAddressOutput>;
 }
 

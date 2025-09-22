@@ -1,8 +1,8 @@
 import {
   CreateCustomerInput,
   CreateCustomerOutput,
-  CreateCustomerUseCaseInterface,
-} from './interfaces/create-customer.usecase.interface';
+  CreateCustomerInterface,
+} from './create-customer.interface';
 import { PasswordHasherInterface } from '../../ports/password-hasher.interface';
 import {
   RepositoryFactory,
@@ -12,25 +12,27 @@ import { IdGeneratorInterface } from '../../ports/id-generator.interface';
 import { Document } from '../../../domain/entities/document.entity';
 import { CustomerBuilder } from '../../../domain/builders/customer.builder';
 import { ApplicationValidationError } from '../../commons/errors/errors';
+import { Password } from '../../../domain/entities/password.entity';
 
-export class CreateCustomerUseCase implements CreateCustomerUseCaseInterface {
+export class CreateCustomerUseCase implements CreateCustomerInterface {
   constructor(
     private readonly unitOfWork: UnitOfWorkInterface,
     private readonly passwordHasher: PasswordHasherInterface,
-    private readonly IdGenerator: IdGeneratorInterface,
+    private readonly idGenerator: IdGeneratorInterface,
   ) {}
 
   public async create(
     input: CreateCustomerInput,
   ): Promise<CreateCustomerOutput> {
-    const customer = new CustomerBuilder()
-      .withId(this.IdGenerator.generate('cus'))
+    const password = await Password.create(input.password, this.passwordHasher);
+    const customer = new CustomerBuilder(this.idGenerator)
+      .withId(this.idGenerator.generate('cus'))
       .withName(input.name)
       .withEmail(input.email)
-      .withPassword(await this.passwordHasher.hash(input.password, 10))
+      .withPassword(password)
       .withGender(input.gender)
       .withPhone(input.phone)
-      .withDocuments(input.documents, this.IdGenerator)
+      .withDocuments(input.documents)
       .withDateOfBirth(input.dateOfBirth)
       .build({ validate: true });
 

@@ -1,18 +1,29 @@
-import { DocumentInterface } from './interfaces/document.interface';
-import { DocumentTypeEnum } from '../enums/document-type.enum';
+import {
+  DocumentAttributes,
+  DocumentInterface,
+  DocumentTypes,
+} from './interfaces/document.interface';
 import { ApplicationValidationError } from '../../app/commons/errors/errors';
 
 export class Document implements DocumentInterface {
-  private _id: string | null = null;
+  private readonly _id: string;
+  private readonly _customerId: string;
+  private readonly _type: DocumentTypes;
+  private readonly _value: string;
+  private readonly _issuingAuthority: string | null = null;
+  private readonly _issueDate: Date | null = null;
+  private readonly _expirationDate: Date | null = null;
 
-  constructor(
-    private readonly _customerId: string,
-    private readonly _type: DocumentTypeEnum,
-    private readonly _value: string,
-    private readonly _issuingAuthority: string | null = null,
-    private readonly _issueDate: Date | null = null,
-    private readonly _expirationDate: Date | null = null,
-  ) {}
+  constructor(attr: DocumentAttributes) {
+    this._id = attr.id;
+    this._customerId = attr.customerId;
+    this._type = attr.type;
+    this._value = attr.value;
+    this._issuingAuthority = attr.issuingAuthority;
+    this._issueDate = attr.issueDate;
+    this._expirationDate = attr.expirationDate;
+    Object.freeze(this);
+  }
 
   public get id(): string {
     if (!this._id) {
@@ -27,7 +38,7 @@ export class Document implements DocumentInterface {
     return this._customerId;
   }
 
-  public get type(): DocumentTypeEnum {
+  public get type(): DocumentTypes {
     return this._type;
   }
 
@@ -50,9 +61,5 @@ export class Document implements DocumentInterface {
   public isExpired(): boolean {
     if (!this._expirationDate) return false;
     return this._expirationDate.getTime() < Date.now();
-  }
-
-  public withId(id: string): void {
-    this._id = id;
   }
 }

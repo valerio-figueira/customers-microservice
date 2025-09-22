@@ -3,22 +3,39 @@ import { Document } from './document.entity';
 import { Email } from './email.entity';
 import { Phone } from './phone.entity';
 import { Gender } from './gender.entity';
-import { CustomerInterface } from './interfaces/customer.interface';
+import {
+  CustomerAttributes,
+  CustomerInterface,
+} from './interfaces/customer.interface';
 import { ApplicationValidationError } from '../../app/commons/errors/errors';
+import { Avatar } from './avatar.entity';
+import { Password } from './password.entity';
 
 export class Customer implements CustomerInterface {
-  private readonly _addresses: Address[] = [];
+  private readonly _id: string;
+  private readonly _name: string;
+  private readonly _email: Email;
+  private readonly _password: Password;
+  private readonly _phone: Phone;
+  private readonly _gender: Gender;
+  private readonly _dateOfBirth: Date;
+  private readonly _documents: Document[];
+  private readonly _avatar: Avatar;
+  private readonly _addresses: Address[];
 
-  constructor(
-    private _id: string,
-    private readonly _name: string,
-    private readonly _email: Email,
-    private readonly _password: string,
-    private readonly _phone: Phone,
-    private readonly _gender: Gender,
-    private readonly _dateOfBirth: Date,
-    private readonly _documents: Document[] = [],
-  ) {}
+  constructor(attr: CustomerAttributes) {
+    this._id = attr.id;
+    this._name = attr.name;
+    this._email = attr.email;
+    this._password = attr.password;
+    this._phone = attr.phone;
+    this._gender = attr.gender;
+    this._dateOfBirth = attr.dateOfBirth;
+    this._documents = attr.documents || [];
+    this._avatar = attr.avatar || new Avatar();
+    this._addresses = attr.addresses || [];
+    Object.freeze(this);
+  }
 
   public get id(): string {
     if (!this._id) {
@@ -35,7 +52,7 @@ export class Customer implements CustomerInterface {
     return this._email;
   }
 
-  public get password(): string {
+  public get password(): Password {
     return this._password;
   }
 
@@ -57,6 +74,14 @@ export class Customer implements CustomerInterface {
 
   public get documents(): Document[] {
     return this._documents;
+  }
+
+  public get avatar(): Avatar {
+    return this._avatar;
+  }
+
+  public get avatarPath(): string | null {
+    return this._avatar.path;
   }
 
   public isOver18(): boolean {

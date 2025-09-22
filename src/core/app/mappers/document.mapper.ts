@@ -9,7 +9,10 @@ export class DocumentMapper {
    */
   static toPersistence(
     document: DocumentInterface,
-  ): Omit<PersistedDocumentInterface, 'isExpired'> {
+  ): Omit<
+    PersistedDocumentInterface,
+    'isExpired' | 'deletedAt' | 'updatedAt' | 'createdAt'
+  > {
     return {
       id: document.id,
       customerId: document.customerId,
@@ -18,9 +21,6 @@ export class DocumentMapper {
       issuingAuthority: document.issuingAuthority ?? null,
       issueDate: document.issueDate ?? null,
       expirationDate: document.expirationDate ?? null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
     };
   }
 }
