@@ -15,6 +15,7 @@ import {
   DOCUMENT_REPOSITORY,
   FILE_STORAGE,
   ID_GENERATOR,
+  IMAGE_PROCESSOR,
   PASSWORD_HASHER,
   UNIT_OF_WORK,
   UPDATE_AVATAR,
@@ -26,6 +27,8 @@ import { FileStorageInterface } from './core/app/ports/file-storage.interface';
 import { S3AwsConnection } from './infra/aws/s3-aws.connection';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AvatarController } from './infra/http/avatar.controller';
+import { ImageProcessorInterface } from './core/app/ports/image-processor.interface';
+import { ImageProcessorUtil } from './infra/utils/image-processor.util';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot()],
@@ -61,12 +64,17 @@ import { AvatarController } from './infra/http/avatar.controller';
       inject: [ConfigService],
     },
     {
+      provide: IMAGE_PROCESSOR,
+      useFactory: () => new ImageProcessorUtil(),
+    },
+    {
       provide: UPDATE_AVATAR,
       useFactory: (
         unitOfWork: UnitOfWorkInterface,
         fileStorage: FileStorageInterface,
-      ) => new UpdateAvatarUseCase(unitOfWork, fileStorage),
-      inject: [UNIT_OF_WORK, FILE_STORAGE],
+        imageProcessor: ImageProcessorInterface,
+      ) => new UpdateAvatarUseCase(unitOfWork, fileStorage, imageProcessor),
+      inject: [UNIT_OF_WORK, FILE_STORAGE, IMAGE_PROCESSOR],
     },
     {
       provide: CREATE_CUSTOMER_USECASE,
