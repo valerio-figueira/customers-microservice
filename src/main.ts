@@ -2,13 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
-import { RabbitMQServices } from './infra/message-queue/rabbitmq/enums/rabbitmq.enum';
 import { ApplicationErrorFilter } from './infra/http/exceptions/http-filter.exception';
+import { RabbitMQServices } from './infra/rabbitmq/enums/rabbitmq.enum';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log', 'fatal'],
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.setGlobalPrefix(process.env.MICROSERVICE_NAME || `customers`);
