@@ -1,4 +1,5 @@
 import { AddressInterface } from './interfaces/address.interface';
+import { DomainAddressError } from '../exceptions/domain-address.error';
 
 export class Address implements AddressInterface {
   constructor(
@@ -12,11 +13,13 @@ export class Address implements AddressInterface {
     private readonly _isDefault: boolean,
   ) {
     if (!_street || !_number || !_zipcode || !_city || !_state) {
-      throw new Error('Endereço inválido. Campos obrigatórios estão ausentes.');
+      throw new DomainAddressError(
+        'Endereço inválido. Campos obrigatórios estão ausentes.',
+      );
     }
 
     if (!/^\d{5}-?\d{3}$/.test(_zipcode)) {
-      throw new Error('CEP inválido.');
+      throw new DomainAddressError('CEP inválido.');
     }
   }
 

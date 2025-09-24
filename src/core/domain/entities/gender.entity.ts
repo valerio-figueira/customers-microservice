@@ -1,4 +1,5 @@
 import { GenderEnum } from '../enums/gender.enum';
+import { DomainGenderError } from '../exceptions/domain-gender.error';
 
 export class Gender {
   private readonly VALID_VALUES = [GenderEnum.MALE, GenderEnum.FEMALE];
@@ -10,7 +11,7 @@ export class Gender {
 
   private create(value: GenderEnum): GenderEnum {
     if (!this.VALID_VALUES.includes(value)) {
-      throw new Error(
+      throw new DomainGenderError(
         `Gênero inválido: "${value}". Aceitos: ${this.VALID_VALUES.join(', ')}`,
       );
     }

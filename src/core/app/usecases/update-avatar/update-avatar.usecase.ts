@@ -5,9 +5,9 @@ import {
   UpdateAvatarInterface,
   UpdateAvatarOutput,
 } from './update-avatar.interface';
-import { ApplicationValidationError } from '../../commons/errors/errors';
 import { Avatar } from '../../../domain/entities/avatar.entity';
 import { ImageProcessorInterface } from '../../ports/image-processor.interface';
+import { ApplicationValidationError } from '../../exceptions/application-validation.error';
 
 export class UpdateAvatarUseCase implements UpdateAvatarInterface {
   constructor(

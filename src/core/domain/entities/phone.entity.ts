@@ -1,4 +1,4 @@
-import { ApplicationValidationError } from '../../app/commons/errors/errors';
+import { DomainPhoneError } from '../exceptions/domain-phone.error';
 
 export class Phone {
   public readonly value: string;
@@ -7,7 +7,7 @@ export class Phone {
     const cleaned = Phone.clean(value);
 
     if (!Phone.isValid(cleaned)) {
-      throw new ApplicationValidationError('Telefone inválido.');
+      throw new DomainPhoneError();
     }
 
     this.value = cleaned;

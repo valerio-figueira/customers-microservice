@@ -6,10 +6,16 @@ import { Document } from '../entities/document.entity';
 import { GenderEnum } from '../enums/gender.enum';
 import { CustomerDocumentInterface } from '../entities/interfaces/customer.interface';
 import { IdGeneratorInterface } from '../../app/ports/id-generator.interface';
-import { ApplicationValidationError } from '../../app/commons/errors/errors';
 import { Avatar } from '../entities/avatar.entity';
 import { Address } from '../entities/address.entity';
 import { Password } from '../entities/password.entity';
+import { DomainDocumentError } from '../exceptions/domain-document.error';
+import { DomainCustomerError } from '../exceptions/domain-customer.error';
+import { DomainEmailError } from '../exceptions/domain-email.error';
+import { DomainPasswordError } from '../exceptions/domain-password.error';
+import { DomainPhoneError } from '../exceptions/domain-phone.error';
+import { DomainGenderError } from '../exceptions/domain-gender.error';
+import { DomainDateOfBirthError } from '../exceptions/domain-date-of-birth.error';
 
 export class CustomerBuilder {
   private _id: string;
@@ -57,9 +63,7 @@ export class CustomerBuilder {
 
   public withDateOfBirth(date: Date): this {
     if (!date) {
-      throw new ApplicationValidationError(
-        'A data de nascimento é obrigatória.',
-      );
+      throw new DomainDateOfBirthError('A data de nascimento é obrigatória.');
     }
     this._dateOfBirth = new Date(date);
     return this;
@@ -69,7 +73,7 @@ export class CustomerBuilder {
     documents: Array<CustomerDocumentInterface & { id?: string }>,
   ): this {
     if (!this._id) {
-      throw new ApplicationValidationError(
+      throw new DomainDocumentError(
         'Não é possível adicionar documentos sem o id de usuário.',
       );
     }
@@ -121,53 +125,49 @@ export class CustomerBuilder {
 
   private validateId(): void {
     if (!this._id) {
-      throw new ApplicationValidationError('Está faltando o id de usuário.');
+      throw new DomainCustomerError('Está faltando o id de usuário.');
     }
   }
 
   private validateName(): void {
     if (!this._name) {
-      throw new ApplicationValidationError('Está faltando o nome do usuário.');
+      throw new DomainCustomerError('Está faltando o nome do usuário.');
     }
   }
 
   private validateEmail(): void {
     if (!this._email) {
-      throw new ApplicationValidationError('Está faltando o e-mail.');
+      throw new DomainEmailError('Está faltando o e-mail.');
     }
   }
 
   private validatePassword(): void {
     if (!this._password) {
-      throw new ApplicationValidationError('Está faltando a senha.');
+      throw new DomainPasswordError('Está faltando a senha.');
     }
   }
 
   private validatePhone(): void {
     if (!this._phone) {
-      throw new ApplicationValidationError('Está faltando o telefone.');
+      throw new DomainPhoneError('Está faltando o telefone.');
     }
   }
 
   private validateGender(): void {
     if (!this._gender) {
-      throw new ApplicationValidationError('Está faltando o gênero.');
+      throw new DomainGenderError('Está faltando o gênero.');
     }
   }
 
   private validateDateOfBirth(): void {
     if (!this._dateOfBirth) {
-      throw new ApplicationValidationError(
-        'Está faltando a data de nascimento.',
-      );
+      throw new DomainDateOfBirthError('Está faltando a data de nascimento.');
     }
   }
 
   private validateDocuments(): void {
     if (!this._documents.length) {
-      throw new ApplicationValidationError(
-        'Está faltando os documentos do usuário.',
-      );
+      throw new DomainDocumentError('Está faltando os documentos do usuário.');
     }
   }
 }

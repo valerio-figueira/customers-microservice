@@ -1,5 +1,5 @@
-import { ApplicationValidationError } from '../../app/commons/errors/errors';
 import { AvatarInterface } from './interfaces/avatar.interface';
+import { DomainAvatarError } from '../exceptions/domain-avatar.error';
 
 export class Avatar implements AvatarInterface {
   private readonly _path: string | null;
@@ -16,7 +16,7 @@ export class Avatar implements AvatarInterface {
     } = props || {};
 
     if (path && !Avatar.isValidPath(path)) {
-      throw new ApplicationValidationError('O caminho do avatar é inválido.');
+      throw new DomainAvatarError('O caminho do avatar é inválido.');
     }
 
     this._path = path;
@@ -51,9 +51,7 @@ export class Avatar implements AvatarInterface {
 
   public getPathOrThrow(): string {
     if (!this._path) {
-      throw new ApplicationValidationError(
-        'O caminho do avatar é obrigatório.',
-      );
+      throw new DomainAvatarError('O caminho do avatar é obrigatório.');
     }
     return this._path;
   }

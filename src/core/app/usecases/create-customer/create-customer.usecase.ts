@@ -11,8 +11,8 @@ import {
 import { IdGeneratorInterface } from '../../ports/id-generator.interface';
 import { Document } from '../../../domain/entities/document.entity';
 import { CustomerBuilder } from '../../../domain/builders/customer.builder';
-import { ApplicationValidationError } from '../../commons/errors/errors';
 import { Password } from '../../../domain/entities/password.entity';
+import { ApplicationValidationError } from '../../exceptions/application-validation.error';
 
 export class CreateCustomerUseCase implements CreateCustomerInterface {
   constructor(

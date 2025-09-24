@@ -7,9 +7,9 @@ import {
   CustomerAttributes,
   CustomerInterface,
 } from './interfaces/customer.interface';
-import { ApplicationValidationError } from '../../app/commons/errors/errors';
 import { Avatar } from './avatar.entity';
 import { Password } from './password.entity';
+import { DomainCustomerError } from '../exceptions/domain-customer.error';
 
 export class Customer implements CustomerInterface {
   private readonly _id: string;
@@ -39,7 +39,7 @@ export class Customer implements CustomerInterface {
 
   public get id(): string {
     if (!this._id) {
-      throw new ApplicationValidationError('Customer id is empty.');
+      throw new DomainCustomerError('O id do usuário é obrigatório');
     }
     return this._id;
   }

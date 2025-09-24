@@ -3,7 +3,7 @@ import {
   DocumentInterface,
   DocumentTypes,
 } from './interfaces/document.interface';
-import { ApplicationValidationError } from '../../app/commons/errors/errors';
+import { DomainDocumentError } from '../exceptions/domain-document.error';
 
 export class Document implements DocumentInterface {
   private readonly _id: string;
@@ -27,7 +27,7 @@ export class Document implements DocumentInterface {
 
   public get id(): string {
     if (!this._id) {
-      throw new ApplicationValidationError(
+      throw new DomainDocumentError(
         'O id do documento não pode estar vazio.',
       );
     }

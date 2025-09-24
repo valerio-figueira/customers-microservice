@@ -1,11 +1,11 @@
-import { ApplicationValidationError } from '../../app/commons/errors/errors';
+import { DomainEmailError } from '../exceptions/domain-email.error';
 
 export class Email {
   public readonly value: string;
 
   constructor(value: string) {
     if (!Email.isValid(value)) {
-      throw new ApplicationValidationError('Email inválido.');
+      throw new DomainEmailError();
     }
     this.value = value;
   }
