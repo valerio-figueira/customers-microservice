@@ -10,7 +10,7 @@ import {
   QueueClientInterface,
   QueueReceiveOptions,
   QueueSendOptions,
-} from '../../core/app/ports/queue-client.interface';
+} from '../../../core/app/ports/queue-client.interface';
 
 export class AwsSQSAdapter implements QueueClientInterface {
   private readonly _client: SQSClient;

@@ -1,7 +1,7 @@
-import { PasswordHasherInterface } from '../../core/app/ports/password-hasher.interface';
+import { PasswordHasherInterface } from '../../../core/app/ports/password-hasher.interface';
 import * as bcrypt from 'bcrypt';
 
-export class BcryptPasswordHasher implements PasswordHasherInterface {
+export class BcryptPasswordHasherAdapter implements PasswordHasherInterface {
   /**
    * Gera um hash seguro para uma senha.
    *

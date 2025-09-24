@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   PublisherOptions,
   MessageBrokerInterface,
-} from '../../core/app/ports/message-broker.interface';
+} from '../../../core/app/ports/message-broker.interface';
 
 @Injectable()
 export class AwsSNSAdapter implements MessageBrokerInterface {

@@ -4,7 +4,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import { FileStorageInterface } from '../../core/app/ports/file-storage.interface';
+import { FileStorageInterface } from '../../../core/app/ports/file-storage.interface';
 import { ConfigService } from '@nestjs/config';
 
 export class AwsS3Adapter implements FileStorageInterface {

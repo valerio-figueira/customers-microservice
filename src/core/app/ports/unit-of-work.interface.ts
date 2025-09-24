@@ -1,5 +1,5 @@
-import { CustomerRepositoryInterface } from '../../domain/repositories/customers.repository.interface';
-import { DocumentRepositoryInterface } from '../../domain/repositories/document.repository.interface';
+import { CustomerRepositoryInterface } from './repositories/customers.repository.interface';
+import { DocumentRepositoryInterface } from './repositories/document.repository.interface';
 
 export interface UnitOfWorkInterface {
   execute<T>(work: (repositories: RepositoryFactory) => Promise<T>): Promise<T>;

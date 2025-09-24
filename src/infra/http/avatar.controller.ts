@@ -15,7 +15,7 @@ import type {
   UpdateAvatarInterface,
   UpdateAvatarOutput,
 } from '../../core/app/usecases/update-avatar/update-avatar.interface';
-import { UPDATE_AVATAR } from '../tokens';
+import { UPDATE_AVATAR } from '../config/tokens';
 
 @Controller()
 export class AvatarController {

@@ -1,7 +1,7 @@
 import {
   PublisherOptions,
   MessageBrokerInterface,
-} from '../../core/app/ports/message-broker.interface';
+} from '../../../core/app/ports/message-broker.interface';
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject, Injectable } from '@nestjs/common';
 import { RabbitMQServices } from './enums/rabbitmq.enum';

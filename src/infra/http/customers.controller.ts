@@ -1,7 +1,7 @@
 import { Body, Controller, HttpException, Inject, Post } from '@nestjs/common';
 import type { CreateCustomerInterface } from '../../core/app/usecases/create-customer/create-customer.interface';
 import { CreateCustomerDto } from '../dtos/create-customer.dto';
-import { CREATE_CUSTOMER_USECASE } from '../tokens';
+import { CREATE_CUSTOMER_USECASE } from '../config/tokens';
 import { HttpExceptionMapper } from './exceptions/http-exception.mapper';
 
 @Controller()

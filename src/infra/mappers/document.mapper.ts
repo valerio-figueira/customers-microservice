@@ -1,7 +1,7 @@
 import {
   DocumentInterface,
   PersistedDocumentInterface,
-} from '../../domain/entities/interfaces/document.interface';
+} from '../../core/domain/entities/interfaces/document.interface';
 
 export class DocumentMapper {
   /**

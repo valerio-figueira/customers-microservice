@@ -1,11 +1,11 @@
-import { CustomerRepositoryInterface } from '../../../../core/domain/repositories/customers.repository.interface';
+import { CustomerRepositoryInterface } from '../../../../core/app/ports/repositories/customers.repository.interface';
 import { Customer } from '../../../../core/domain/entities/customer.entity';
 import { PrismaConnection } from '../prisma.connection';
-import { CustomerMapper } from '../../../../core/app/mappers/customer.mapper';
+import { CustomerMapper } from '../../../mappers/customer.mapper';
 import { PrismaTransaction } from './prisma-unit-of-work';
 import { PersistedCustomerInterface } from '../../../../core/domain/entities/interfaces/customer.interface';
-import { DocumentMapper } from '../../../../core/app/mappers/document.mapper';
-import { ApplicationNotFoundError } from '../../../../core/app/commons/errors/errors';
+import { DocumentMapper } from '../../../mappers/document.mapper';
+import { RepositoryInternalError } from '../../../../core/app/exceptions/repository-internal.error';
 
 export class PrismaCustomerRepository implements CustomerRepositoryInterface {
   constructor(private readonly prisma: PrismaConnection | PrismaTransaction) {}
@@ -29,7 +29,7 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
     const persisted = await this.findById(id);
 
     if (!persisted) {
-      throw new ApplicationNotFoundError(
+      throw new RepositoryInternalError(
         `Erro de persistência - Usuário não encontrado: ${id}`,
       );
     }

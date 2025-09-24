@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 import { ApplicationErrorFilter } from './infra/http/exceptions/http-filter.exception';
-import { RabbitMQServices } from './infra/rabbitmq/enums/rabbitmq.enum';
+import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);

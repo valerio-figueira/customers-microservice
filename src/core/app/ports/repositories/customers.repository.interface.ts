@@ -1,5 +1,5 @@
-import { Customer } from '../entities/customer.entity';
-import { PersistedCustomerInterface } from '../entities/interfaces/customer.interface';
+import { Customer } from '../../../domain/entities/customer.entity';
+import { PersistedCustomerInterface } from '../../../domain/entities/interfaces/customer.interface';
 
 /**
  * @interface CustomerRepository

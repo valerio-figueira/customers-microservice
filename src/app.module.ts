@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './infra/orms/prisma/prisma.module';
+import { PrismaModule } from './infra/database/prisma/prisma.module';
 import { CustomersController } from './infra/http/customers.controller';
-import { PrismaCustomerRepository } from './infra/orms/prisma/repositories/prisma-customer.repository';
-import { PrismaDocumentRepository } from './infra/orms/prisma/repositories/prisma-document.repository';
-import { PrismaUnitOfWork } from './infra/orms/prisma/repositories/prisma-unit-of-work';
+import { PrismaCustomerRepository } from './infra/database/prisma/repositories/prisma-customer.repository';
+import { PrismaDocumentRepository } from './infra/database/prisma/repositories/prisma-document.repository';
+import { PrismaUnitOfWork } from './infra/database/prisma/repositories/prisma-unit-of-work';
 import { PasswordHasherInterface } from './core/app/ports/password-hasher.interface';
 import { CreateCustomerUseCase } from './core/app/usecases/create-customer/create-customer.usecase';
 import { UnitOfWorkInterface } from './core/app/ports/unit-of-work.interface';
 import { IdGeneratorInterface } from './core/app/ports/id-generator.interface';
-import { PrismaConnection } from './infra/orms/prisma/prisma.connection';
+import { PrismaConnection } from './infra/database/prisma/prisma.connection';
 import {
   CREATE_CUSTOMER_USECASE,
   CUSTOMER_REPOSITORY,
@@ -16,9 +16,9 @@ import {
   ID_GENERATOR,
   PASSWORD_HASHER,
   UNIT_OF_WORK,
-} from './infra/tokens';
-import { IdGenerator } from './infra/utils/id-generator.util';
-import { BcryptPasswordHasher } from './infra/utils/password-hasher.util';
+} from './infra/config/tokens';
+import { IdGeneratorAdapter } from './infra/adapters/ids/id-generator.adapter';
+import { BcryptPasswordHasherAdapter } from './infra/adapters/hashing/password-hasher.adapter';
 
 @Module({
   imports: [PrismaModule],
@@ -42,10 +42,10 @@ import { BcryptPasswordHasher } from './infra/utils/password-hasher.util';
       useFactory: (prisma: PrismaConnection) => new PrismaUnitOfWork(prisma),
       inject: [PrismaConnection],
     },
-    { provide: ID_GENERATOR, useFactory: () => new IdGenerator() },
+    { provide: ID_GENERATOR, useFactory: () => new IdGeneratorAdapter() },
     {
       provide: PASSWORD_HASHER,
-      useFactory: () => new BcryptPasswordHasher(),
+      useFactory: () => new BcryptPasswordHasherAdapter(),
     },
     {
       provide: CREATE_CUSTOMER_USECASE,

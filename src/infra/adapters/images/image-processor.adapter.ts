@@ -1,7 +1,7 @@
-import { ImageProcessorInterface } from '../../core/app/ports/image-processor.interface';
+import { ImageProcessorInterface } from '../../../core/app/ports/image-processor.interface';
 import sharp from 'sharp';
 
-export class ImageProcessorUtil implements ImageProcessorInterface {
+export class ImageProcessorAdapter implements ImageProcessorInterface {
   public async resize(
     originalFileBuffer: Buffer,
     width: number,

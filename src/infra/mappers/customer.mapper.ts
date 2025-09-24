@@ -1,7 +1,7 @@
 import {
   CustomerInterface,
   PersistedCustomerInterface,
-} from '../../domain/entities/interfaces/customer.interface';
+} from '../../core/domain/entities/interfaces/customer.interface';
 
 export class CustomerMapper {
   /**
