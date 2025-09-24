@@ -1,7 +1,7 @@
 import {
   CreateCustomerInput,
-  CreateCustomerOutput,
   CreateCustomerInterface,
+  CreateCustomerOutput,
 } from './create-customer.interface';
 import { PasswordHasherInterface } from '../../ports/password-hasher.interface';
 import {
@@ -13,12 +13,17 @@ import { Document } from '../../../domain/entities/document.entity';
 import { CustomerBuilder } from '../../../domain/builders/customer.builder';
 import { Password } from '../../../domain/entities/password.entity';
 import { ApplicationValidationError } from '../../exceptions/application-validation.error';
+import {
+  MessageBrokerPublisherInterface,
+  MessageOperation,
+} from '../../ports/message-broker.interface';
 
 export class CreateCustomerUseCase implements CreateCustomerInterface {
   constructor(
     private readonly unitOfWork: UnitOfWorkInterface,
     private readonly passwordHasher: PasswordHasherInterface,
     private readonly idGenerator: IdGeneratorInterface,
+    private readonly messageBrokerPublisher: MessageBrokerPublisherInterface,
   ) {}
 
   public async create(
@@ -39,7 +44,12 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
     return this.unitOfWork.execute(async (repositories) => {
       await this.throwIfEmailExists(customer.email.value, repositories);
       await this.throwIfDocumentExists(customer.documents, repositories);
-      return repositories.customers.save(customer);
+      const createdCustomer = await repositories.customers.save(customer);
+      await this.messageBrokerPublisher.publish({
+        operation: MessageOperation.CUSTOMER_CREATED,
+        message: createdCustomer,
+      });
+      return createdCustomer;
     });
   }
 

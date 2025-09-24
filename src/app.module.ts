@@ -14,17 +14,24 @@ import {
   CUSTOMER_REPOSITORY,
   DOCUMENT_REPOSITORY,
   ID_GENERATOR,
+  MESSAGE_BROKER_PUBLISHER,
   PASSWORD_HASHER,
   UNIT_OF_WORK,
 } from './infra/config/tokens';
 import { IdGeneratorAdapter } from './infra/adapters/ids/id-generator.adapter';
 import { BcryptPasswordHasherAdapter } from './infra/adapters/hashing/password-hasher.adapter';
+import { MessageBrokerPublisherInterface } from './core/app/ports/message-broker.interface';
+import { RabbitMQClientProvider } from './infra/config/providers/rabbitmq-client.provider';
+import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
+import { RabbitMQPublisherAdapter } from './infra/adapters/rabbitmq/rabbitmq-publisher.adapter';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Module({
   imports: [PrismaModule],
   controllers: [CustomersController],
   providers: [
     PrismaConnection,
+    RabbitMQClientProvider,
     {
       provide: DOCUMENT_REPOSITORY,
       useFactory: (prisma: PrismaConnection) =>
@@ -48,13 +55,31 @@ import { BcryptPasswordHasherAdapter } from './infra/adapters/hashing/password-h
       useFactory: () => new BcryptPasswordHasherAdapter(),
     },
     {
+      provide: MESSAGE_BROKER_PUBLISHER,
+      useFactory: (clientProxy: ClientProxy) =>
+        new RabbitMQPublisherAdapter(clientProxy),
+      inject: [RabbitMQServices.CUSTOMERS_RMQ],
+    },
+    {
       provide: CREATE_CUSTOMER_USECASE,
       useFactory: (
         unitOfWork: UnitOfWorkInterface,
         passwordHasher: PasswordHasherInterface,
         idGenerator: IdGeneratorInterface,
-      ) => new CreateCustomerUseCase(unitOfWork, passwordHasher, idGenerator),
-      inject: [UNIT_OF_WORK, PASSWORD_HASHER, ID_GENERATOR],
+        messageBrokerPublisher: MessageBrokerPublisherInterface,
+      ) =>
+        new CreateCustomerUseCase(
+          unitOfWork,
+          passwordHasher,
+          idGenerator,
+          messageBrokerPublisher,
+        ),
+      inject: [
+        UNIT_OF_WORK,
+        PASSWORD_HASHER,
+        ID_GENERATOR,
+        MESSAGE_BROKER_PUBLISHER,
+      ],
     },
   ],
 })
