@@ -2,19 +2,18 @@ export interface MessageBrokerPublisherInterface {
   publish(options: PublisherOptions): Promise<void>;
 }
 
-export enum MessageOperation {
-  CUSTOMER_CREATED = 'customer_created',
+export enum MessageBrokerPattern {
+  CUSTOMER_CREATED = 'customer.created',
 }
 
 export interface PublisherOptions {
-  operation?: MessageOperation.CUSTOMER_CREATED;
+  pattern: MessageBrokerPattern;
   message: object;
   subject?: string;
 }
 
+export type Handler<T = object> = (message: T) => Promise<void>;
+
 export interface MessageBrokerSubscriberInterface<T = object> {
-  subscribe(
-    queue: string,
-    handler: (message: T) => Promise<void>,
-  ): Promise<void>;
+  subscribe(pattern: string, handler: Handler<T>): void;
 }

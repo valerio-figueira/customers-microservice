@@ -15,7 +15,7 @@ import { Password } from '../../../domain/entities/password.entity';
 import { ApplicationValidationError } from '../../exceptions/application-validation.error';
 import {
   MessageBrokerPublisherInterface,
-  MessageOperation,
+  MessageBrokerPattern,
 } from '../../ports/message-broker.interface';
 
 export class CreateCustomerUseCase implements CreateCustomerInterface {
@@ -46,7 +46,7 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
       await this.throwIfDocumentExists(customer.documents, repositories);
       const createdCustomer = await repositories.customers.save(customer);
       await this.messageBrokerPublisher.publish({
-        operation: MessageOperation.CUSTOMER_CREATED,
+        pattern: MessageBrokerPattern.CUSTOMER_CREATED,
         message: createdCustomer,
       });
       return createdCustomer;

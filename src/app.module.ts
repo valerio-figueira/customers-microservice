@@ -21,17 +21,16 @@ import {
 import { IdGeneratorAdapter } from './infra/adapters/ids/id-generator.adapter';
 import { BcryptPasswordHasherAdapter } from './infra/adapters/hashing/password-hasher.adapter';
 import { MessageBrokerPublisherInterface } from './core/app/ports/message-broker.interface';
-import { RabbitMQClientProvider } from './infra/config/providers/rabbitmq-client.provider';
-import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
 import { RabbitMQPublisherAdapter } from './infra/adapters/rabbitmq/rabbitmq-publisher.adapter';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, ClientsModule } from '@nestjs/microservices';
+import { RabbitMQConfig } from './infra/config/rabbitmq.config';
+import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, ClientsModule.register([RabbitMQConfig])],
   controllers: [CustomersController],
   providers: [
     PrismaConnection,
-    RabbitMQClientProvider,
     {
       provide: DOCUMENT_REPOSITORY,
       useFactory: (prisma: PrismaConnection) =>
@@ -82,5 +81,6 @@ import { ClientProxy } from '@nestjs/microservices';
       ],
     },
   ],
+  exports: [MESSAGE_BROKER_PUBLISHER],
 })
 export class AppModule {}
