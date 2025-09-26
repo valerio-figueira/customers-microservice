@@ -36,8 +36,7 @@ export class CreateDocumentUseCase implements CreateDocumentUseCaseInterface {
         await policy.ensureCustomerExists(document.customerId);
         await policy.ensureDocumentIsUnique(document);
         await policy.ensureDocumentTypeIsUnique(document);
-        const { id } = await repositories.documents.save(document);
-        return repositories.documents.findByIdOrThrow(id);
+        return repositories.documents.save(document);
       },
     );
   }

@@ -11,10 +11,23 @@ import { DocumentMapper } from '../../../mappers/document.mapper';
 export class PrismaDocumentRepository implements DocumentRepositoryInterface {
   constructor(private readonly prisma: PrismaConnection | PrismaTransaction) {}
 
-  public async save(document: DocumentInterface): Promise<{ id: string }> {
+  public async save(
+    document: DocumentInterface,
+  ): Promise<PersistedDocumentInterface> {
     return this.prisma.document.create({
       data: DocumentMapper.toPersistence(document),
-      select: { id: true },
+      select: {
+        id: true,
+        customerId: true,
+        type: true,
+        value: true,
+        expirationDate: true,
+        issuingAuthority: true,
+        issueDate: true,
+        updatedAt: true,
+        createdAt: true,
+        deletedAt: true,
+      },
     });
   }
 
