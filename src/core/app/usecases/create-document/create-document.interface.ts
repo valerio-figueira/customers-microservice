@@ -2,10 +2,11 @@ import { DocumentTypeEnum } from '../../../domain/enums/document-type.enum';
 import { DocumentInterface } from '../../../domain/entities/interfaces/document.interface';
 
 export interface CreateDocumentInterface {
-  createMany: (input: CreateDocumentInput[]) => Promise<CreateDocumentOutput[]>;
+  create: (input: CreateDocumentInput) => Promise<CreateDocumentOutput>;
 }
 
 export interface CreateDocumentInput {
+  customerId: string;
   type: DocumentTypeEnum;
   value: string;
   issuingAuthority: string | null;
@@ -16,6 +17,7 @@ export interface CreateDocumentInput {
 export interface CreateDocumentOutput
   extends Omit<DocumentInterface, 'isExpired'> {
   id: string;
+  customerId: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

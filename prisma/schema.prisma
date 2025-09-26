@@ -29,38 +29,39 @@ enum DocumentTypeEnum {
 }
 
 model Customer {
-  id          String      @id @default(uuid())
-  name        String      @db.VarChar(100)
-  email       String      @unique
-  password    String      @db.VarChar(255)
-  phone       String      @db.VarChar(20)
+  id          String     @id @default(uuid())
+  name        String     @db.VarChar(100)
+  email       String     @unique
+  password    String     @db.VarChar(255)
+  phone       String     @db.VarChar(20)
   gender      GenderEnum
   dateOfBirth DateTime
-  avatarPath  String?     @db.VarChar(255)
+  avatarPath  String?    @db.VarChar(255)
 
-  documents   Document[]
+  documents Document[]
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  deletedAt   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map("customers")
 }
 
 model Document {
-  id               String          @id @default(uuid())
-  customerId       String          @db.VarChar(50)
+  id               String           @id @default(uuid())
+  customerId       String           @db.VarChar(50)
   type             DocumentTypeEnum
-  value            String          @db.VarChar(50)
-  issuingAuthority String?         @db.VarChar(20)
+  value            String           @db.VarChar(50) @unique
+  issuingAuthority String?          @db.VarChar(20)
   issueDate        DateTime?
   expirationDate   DateTime?
 
-  customer         Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  deletedAt        DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
+  @@unique([customerId, type])
   @@map("documents")
 }

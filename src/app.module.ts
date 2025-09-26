@@ -11,6 +11,7 @@ import { IdGeneratorInterface } from './core/app/ports/id-generator.interface';
 import { PrismaConnection } from './infra/database/prisma/prisma.connection';
 import {
   CREATE_CUSTOMER_USECASE,
+  CREATE_DOCUMENT_USECASE,
   CUSTOMER_REPOSITORY,
   DOCUMENT_REPOSITORY,
   ID_GENERATOR,
@@ -25,10 +26,12 @@ import { RabbitMQPublisherAdapter } from './infra/adapters/rabbitmq/rabbitmq-pub
 import { ClientProxy, ClientsModule } from '@nestjs/microservices';
 import { RabbitMQConfig } from './infra/config/rabbitmq.config';
 import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
+import { CreateDocumentUsecase } from './core/app/usecases/create-document/create-document.usecase';
+import { DocumentsController } from './infra/http/documents.controller';
 
 @Module({
   imports: [PrismaModule, ClientsModule.register([RabbitMQConfig])],
-  controllers: [CustomersController],
+  controllers: [CustomersController, DocumentsController],
   providers: [
     PrismaConnection,
     {
@@ -42,6 +45,14 @@ import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum'
       useFactory: (prisma: PrismaConnection) =>
         new PrismaCustomerRepository(prisma),
       inject: [PrismaConnection],
+    },
+    {
+      provide: CREATE_DOCUMENT_USECASE,
+      useFactory: (
+        unitOfWork: UnitOfWorkInterface,
+        idGenerator: IdGeneratorInterface,
+      ) => new CreateDocumentUsecase(unitOfWork, idGenerator),
+      inject: [UNIT_OF_WORK, ID_GENERATOR],
     },
     {
       provide: UNIT_OF_WORK,

@@ -15,7 +15,7 @@ export interface CreateCustomerInput {
   phone: string;
   gender: GenderEnum;
   dateOfBirth: Date;
-  documents: CreateDocumentInput[];
+  documents: Omit<CreateDocumentInput, 'customerId'>[];
 }
 
 export interface CreateCustomerOutput {
