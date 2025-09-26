@@ -1,6 +1,6 @@
 import { PersistedCustomerInterface } from '../../../domain/entities/interfaces/customer.interface';
 
-export interface UpdateAvatarInterface {
+export interface UpdateAvatarUseCaseInterface {
   update(input: UpdateAvatarInput): Promise<UpdateAvatarOutput>;
 }
 

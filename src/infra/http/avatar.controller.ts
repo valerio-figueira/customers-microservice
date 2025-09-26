@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type {
-  UpdateAvatarInterface,
+  UpdateAvatarUseCaseInterface,
   UpdateAvatarOutput,
 } from '../../core/app/usecases/update-avatar/update-avatar.interface';
 import { UPDATE_AVATAR } from '../config/tokens';
@@ -21,7 +21,7 @@ import { UPDATE_AVATAR } from '../config/tokens';
 export class AvatarController {
   constructor(
     @Inject(UPDATE_AVATAR)
-    private readonly updateAvatarUseCase: UpdateAvatarInterface,
+    private readonly updateAvatarUseCase: UpdateAvatarUseCaseInterface,
   ) {}
 
   /**
