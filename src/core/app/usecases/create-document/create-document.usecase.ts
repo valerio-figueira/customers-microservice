@@ -45,8 +45,6 @@ export class CreateDocumentUsecase implements CreateDocumentInterface {
   ): Promise<void> {
     const existing = await repositories.documents.findDocument(document.value);
     if (!existing) return;
-    console.log(document.customerId);
-    console.log(existing);
     if (existing.customerId === document.customerId) {
       throw new ApplicationValidationError(
         'O usuário já possui este documento cadastrado.',
