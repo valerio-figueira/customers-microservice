@@ -17,6 +17,7 @@ import {
   ID_GENERATOR,
   MESSAGE_BROKER_PUBLISHER,
   PASSWORD_HASHER,
+  READ_ONE_CUSTOMER_USECASE,
   UNIT_OF_WORK,
 } from './infra/config/tokens';
 import { IdGeneratorAdapter } from './infra/adapters/ids/id-generator.adapter';
@@ -28,6 +29,8 @@ import { RabbitMQConfig } from './infra/config/rabbitmq.config';
 import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
 import { CreateDocumentUsecase } from './core/app/usecases/create-document/create-document.usecase';
 import { DocumentsController } from './infra/http/documents.controller';
+import { ReadOneCustomerUseCase } from './core/app/usecases/read-customer/read-one-customer.usecase';
+import { CustomerRepositoryInterface } from './core/app/ports/repositories/customers.repository.interface';
 
 @Module({
   imports: [PrismaModule, ClientsModule.register([RabbitMQConfig])],
@@ -45,6 +48,12 @@ import { DocumentsController } from './infra/http/documents.controller';
       useFactory: (prisma: PrismaConnection) =>
         new PrismaCustomerRepository(prisma),
       inject: [PrismaConnection],
+    },
+    {
+      provide: READ_ONE_CUSTOMER_USECASE,
+      useFactory: (customerRepository: CustomerRepositoryInterface) =>
+        new ReadOneCustomerUseCase(customerRepository),
+      inject: [CUSTOMER_REPOSITORY],
     },
     {
       provide: CREATE_DOCUMENT_USECASE,

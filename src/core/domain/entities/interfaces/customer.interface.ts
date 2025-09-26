@@ -25,6 +25,7 @@ export interface CustomerInterface {
 }
 
 export type CustomerAttributes = Omit<CustomerInterface, 'isOver18'>;
+export type GenderType = GenderEnum | 'MALE' | 'FEMALE' | 'OTHER';
 
 export interface PersistedCustomerInterface {
   readonly id: string;
@@ -32,7 +33,7 @@ export interface PersistedCustomerInterface {
   readonly email: string;
   readonly password: string;
   readonly phone: string;
-  readonly gender: GenderEnum | 'MALE' | 'FEMALE' | 'OTHER';
+  readonly gender: GenderType;
   readonly dateOfBirth: Date;
   readonly documents: PersistedDocumentInterface[];
   readonly avatarPath: string | null;
