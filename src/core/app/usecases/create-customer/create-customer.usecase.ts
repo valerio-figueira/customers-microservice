@@ -42,8 +42,8 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
       .build({ validate: true });
 
     return this.unitOfWork.execute(async (repositories) => {
-      await this.throwIfEmailExists(customer.email.value, repositories);
-      await this.throwIfDocumentExists(customer.documents, repositories);
+      await this.ensureEmailIsUnique(customer.email.value, repositories);
+      await this.ensureDocumentsAreUnique(customer.documents, repositories);
       const createdCustomer = await repositories.customers.save(customer);
       await this.messageBrokerPublisher.publish({
         pattern: MessageBrokerPattern.CUSTOMER_CREATED,
@@ -53,7 +53,7 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
     });
   }
 
-  private async throwIfEmailExists(
+  private async ensureEmailIsUnique(
     email: string,
     repositories: RepositoryFactory,
   ): Promise<void> {
@@ -63,7 +63,7 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
     }
   }
 
-  private async throwIfDocumentExists(
+  private async ensureDocumentsAreUnique(
     documents: Document[],
     repositories: RepositoryFactory,
   ): Promise<void> {
