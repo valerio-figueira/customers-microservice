@@ -27,7 +27,7 @@ import { RabbitMQPublisherAdapter } from './infra/adapters/rabbitmq/rabbitmq-pub
 import { ClientProxy, ClientsModule } from '@nestjs/microservices';
 import { RabbitMQConfig } from './infra/config/rabbitmq.config';
 import { RabbitMQServices } from './infra/adapters/rabbitmq/enums/rabbitmq.enum';
-import { CreateDocumentUsecase } from './core/app/usecases/create-document/create-document.usecase';
+import { CreateDocumentUseCase } from './core/app/usecases/create-document/create-document.usecase';
 import { DocumentsController } from './infra/http/documents.controller';
 import { ReadOneCustomerUseCase } from './core/app/usecases/read-customer/read-one-customer.usecase';
 import { CustomerRepositoryInterface } from './core/app/ports/repositories/customers.repository.interface';
@@ -60,7 +60,7 @@ import { CustomerRepositoryInterface } from './core/app/ports/repositories/custo
       useFactory: (
         unitOfWork: UnitOfWorkInterface,
         idGenerator: IdGeneratorInterface,
-      ) => new CreateDocumentUsecase(unitOfWork, idGenerator),
+      ) => new CreateDocumentUseCase(unitOfWork, idGenerator),
       inject: [UNIT_OF_WORK, ID_GENERATOR],
     },
     {

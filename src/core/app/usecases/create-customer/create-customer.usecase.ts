@@ -4,19 +4,16 @@ import {
   CreateCustomerOutput,
 } from './create-customer.interface';
 import { PasswordHasherInterface } from '../../ports/password-hasher.interface';
-import {
-  RepositoryFactory,
-  UnitOfWorkInterface,
-} from '../../ports/unit-of-work.interface';
+import { UnitOfWorkInterface } from '../../ports/unit-of-work.interface';
 import { IdGeneratorInterface } from '../../ports/id-generator.interface';
-import { Document } from '../../../domain/entities/document.entity';
 import { CustomerBuilder } from '../../../domain/builders/customer.builder';
 import { Password } from '../../../domain/entities/password.entity';
-import { ApplicationValidationError } from '../../exceptions/application-validation.error';
 import {
   MessageBrokerPublisherInterface,
   MessageBrokerPattern,
 } from '../../ports/message-broker.interface';
+import { DocumentPolicy } from '../../../domain/entities/document-policy';
+import { CustomerPolicy } from '../../../domain/entities/customer-policy';
 
 export class CreateCustomerUseCase implements CreateCustomerInterface {
   constructor(
@@ -42,8 +39,10 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
       .build({ validate: true });
 
     return this.unitOfWork.execute(async (repositories) => {
-      await this.ensureEmailIsUnique(customer.email.value, repositories);
-      await this.ensureDocumentsAreUnique(customer.documents, repositories);
+      const customerPolicy = new CustomerPolicy(repositories);
+      const documentPolicy = new DocumentPolicy(repositories);
+      await customerPolicy.ensureEmailIsUnique(customer.email.value);
+      await documentPolicy.ensureDocumentsAreUnique(customer.documents);
       const createdCustomer = await repositories.customers.save(customer);
       await this.messageBrokerPublisher.publish({
         pattern: MessageBrokerPattern.CUSTOMER_CREATED,
@@ -51,26 +50,5 @@ export class CreateCustomerUseCase implements CreateCustomerInterface {
       });
       return createdCustomer;
     });
-  }
-
-  private async ensureEmailIsUnique(
-    email: string,
-    repositories: RepositoryFactory,
-  ): Promise<void> {
-    const emailExists = await repositories.customers.existsEmail(email);
-    if (emailExists) {
-      throw new ApplicationValidationError(`Este e-mail já está registrado.`);
-    }
-  }
-
-  private async ensureDocumentsAreUnique(
-    documents: Document[],
-    repositories: RepositoryFactory,
-  ): Promise<void> {
-    for (const doc of documents) {
-      const exists = await repositories.documents.exists(doc.value);
-      if (!exists) continue;
-      throw new ApplicationValidationError('Este documento já existe.');
-    }
   }
 }

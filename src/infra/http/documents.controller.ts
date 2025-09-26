@@ -8,14 +8,14 @@ import {
 } from '@nestjs/common';
 import { CREATE_DOCUMENT_USECASE } from '../config/tokens';
 import { HttpExceptionMapper } from './exceptions/http-exception.mapper';
-import type { CreateDocumentInterface } from '../../core/app/usecases/create-document/create-document.interface';
+import type { CreateDocumentUseCaseInterface } from '../../core/app/usecases/create-document/create-document.interface';
 import { CreateDocumentDto } from '../dtos/create-document.dto';
 
 @Controller('documents')
 export class DocumentsController {
   constructor(
     @Inject(CREATE_DOCUMENT_USECASE)
-    private readonly createDocumentUseCase: CreateDocumentInterface,
+    private readonly createDocumentUseCase: CreateDocumentUseCaseInterface,
   ) {}
 
   @Post('/:customerId')

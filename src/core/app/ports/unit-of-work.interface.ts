@@ -2,10 +2,12 @@ import { CustomerRepositoryInterface } from './repositories/customers.repository
 import { DocumentRepositoryInterface } from './repositories/document.repository.interface';
 
 export interface UnitOfWorkInterface {
-  execute<T>(work: (repositories: RepositoryFactory) => Promise<T>): Promise<T>;
+  execute<T>(
+    work: (repositories: RepositoryFactoryInterface) => Promise<T>,
+  ): Promise<T>;
 }
 
-export interface RepositoryFactory {
+export interface RepositoryFactoryInterface {
   customers: CustomerRepositoryInterface;
   documents: DocumentRepositoryInterface;
 }

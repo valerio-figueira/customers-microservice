@@ -1,17 +1,17 @@
 import {
   CreateDocumentInput,
-  CreateDocumentInterface,
+  CreateDocumentUseCaseInterface,
   CreateDocumentOutput,
 } from './create-document.interface';
 import {
-  RepositoryFactory,
+  RepositoryFactoryInterface,
   UnitOfWorkInterface,
 } from '../../ports/unit-of-work.interface';
-import { ApplicationValidationError } from '../../exceptions/application-validation.error';
 import { Document } from '../../../domain/entities/document.entity';
 import { IdGeneratorInterface } from '../../ports/id-generator.interface';
+import { DocumentPolicy } from '../../../domain/entities/document-policy';
 
-export class CreateDocumentUsecase implements CreateDocumentInterface {
+export class CreateDocumentUseCase implements CreateDocumentUseCaseInterface {
   constructor(
     private readonly unitOfWork: UnitOfWorkInterface,
     private readonly idGenerator: IdGeneratorInterface,
@@ -30,52 +30,15 @@ export class CreateDocumentUsecase implements CreateDocumentInterface {
       expirationDate: input.expirationDate,
     });
 
-    return this.unitOfWork.execute(async (repositories: RepositoryFactory) => {
-      await this.ensureCustomerExists(document.customerId, repositories);
-      await this.ensureDocumentIsUnique(document, repositories);
-      await this.ensureDocumentTypeIsUnique(document, repositories);
-      const { id } = await repositories.documents.save(document);
-      return repositories.documents.findByIdOrThrow(id);
-    });
-  }
-
-  private async ensureDocumentIsUnique(
-    document: Document,
-    repositories: RepositoryFactory,
-  ): Promise<void> {
-    const existing = await repositories.documents.findDocument(document.value);
-    if (!existing) return;
-    if (existing.customerId === document.customerId) {
-      throw new ApplicationValidationError(
-        'O usuário já possui este documento cadastrado.',
-      );
-    }
-    throw new ApplicationValidationError('Este documento já está cadastrado.');
-  }
-
-  private async ensureCustomerExists(
-    customerId: string,
-    repositories: RepositoryFactory,
-  ): Promise<void> {
-    const customer = await repositories.customers.findById(customerId);
-    if (!customer) {
-      throw new ApplicationValidationError('Usuário não encontrado.');
-    }
-  }
-
-  private async ensureDocumentTypeIsUnique(
-    document: Document,
-    repositories: RepositoryFactory,
-  ): Promise<void> {
-    const existing = await repositories.documents.findByCustomerAndType(
-      document.customerId,
-      document.type,
+    return this.unitOfWork.execute(
+      async (repositories: RepositoryFactoryInterface) => {
+        const policy = new DocumentPolicy(repositories);
+        await policy.ensureCustomerExists(document.customerId);
+        await policy.ensureDocumentIsUnique(document);
+        await policy.ensureDocumentTypeIsUnique(document);
+        const { id } = await repositories.documents.save(document);
+        return repositories.documents.findByIdOrThrow(id);
+      },
     );
-
-    if (existing) {
-      throw new ApplicationValidationError(
-        `O usuário já possui um documento do tipo ${document.type}.`,
-      );
-    }
   }
 }

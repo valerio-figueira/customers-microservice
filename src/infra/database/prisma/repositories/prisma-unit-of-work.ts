@@ -1,5 +1,5 @@
 import {
-  RepositoryFactory,
+  RepositoryFactoryInterface,
   UnitOfWorkInterface,
 } from '../../../../core/app/ports/unit-of-work.interface';
 import { PrismaConnection } from '../prisma.connection';
@@ -21,11 +21,11 @@ export class PrismaUnitOfWork implements UnitOfWorkInterface {
   constructor(private readonly prisma: PrismaConnection) {}
 
   public async execute<T>(
-    work: (repositories: RepositoryFactory) => Promise<T>,
+    work: (repositories: RepositoryFactoryInterface) => Promise<T>,
   ): Promise<T> {
     return this.prisma.$transaction(async (tx) => {
       // criar instâncias de repositórios com o mesmo "transaction client"
-      const repositories: RepositoryFactory = {
+      const repositories: RepositoryFactoryInterface = {
         customers: new PrismaCustomerRepository(tx),
         documents: new PrismaDocumentRepository(tx),
       };

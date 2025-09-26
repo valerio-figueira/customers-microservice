@@ -1,7 +1,7 @@
 import { DocumentTypeEnum } from '../../../domain/enums/document-type.enum';
 import { DocumentInterface } from '../../../domain/entities/interfaces/document.interface';
 
-export interface CreateDocumentInterface {
+export interface CreateDocumentUseCaseInterface {
   create: (input: CreateDocumentInput) => Promise<CreateDocumentOutput>;
 }
 
