@@ -1,6 +1,9 @@
 import { PrismaConnection } from '../prisma.connection';
 import { PrismaTransaction } from './prisma-unit-of-work';
-import { DocumentRepositoryInterface } from '../../../../core/app/ports/repositories/document.repository.interface';
+import {
+  DocumentRepositoryInterface,
+  FindOneDocumentOptions,
+} from '../../../../core/app/ports/repositories/document.repository.interface';
 import {
   DocumentInterface,
   DocumentTypes,
@@ -59,11 +62,11 @@ export class PrismaDocumentRepository implements DocumentRepositoryInterface {
     });
   }
 
-  public async findByIdOrThrow(
-    id: string,
+  public async findOneOrThrow(
+    where: FindOneDocumentOptions,
   ): Promise<PersistedDocumentInterface> {
     return this.prisma.document.findUniqueOrThrow({
-      where: { id },
+      where,
       select: {
         id: true,
         customerId: true,
