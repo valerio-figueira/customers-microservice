@@ -28,23 +28,21 @@ export class AwsDynamoDbAdapter {
   }
 
   public async transactWriteItem(
-    transactItems: TransactWriteItem[],
+    TransactItems: TransactWriteItem[],
   ): Promise<void> {
     try {
-      await this.client.send(
-        new TransactWriteItemsCommand({ TransactItems: transactItems }),
-      );
+      await this.client.send(new TransactWriteItemsCommand({ TransactItems }));
     } catch (error) {
       this.handleError('TransactWriteItem', error);
     }
   }
 
   public async updateItem(
-    updateItemCommand: UpdateItemCommand,
+    command: UpdateItemCommand,
   ): Promise<UpdateItemCommandOutput> {
     try {
       return this.client.send<UpdateItemCommandInput, UpdateItemCommandOutput>(
-        updateItemCommand,
+        command,
       );
     } catch (error) {
       this.handleError('UpdateItem', error);
@@ -52,11 +50,11 @@ export class AwsDynamoDbAdapter {
   }
 
   public async putItem(
-    putItemCommand: PutItemCommand,
+    command: PutItemCommand,
   ): Promise<UpdateItemCommandOutput> {
     try {
       return this.client.send<PutItemCommandInput, PutItemCommandOutput>(
-        putItemCommand,
+        command,
       );
     } catch (error) {
       this.handleError('PutItem', error);
@@ -64,11 +62,10 @@ export class AwsDynamoDbAdapter {
   }
 
   public async getItem(
-    getItemCommand: GetItemCommand,
+    command: GetItemCommand,
   ): Promise<Record<string, any> | null> {
     try {
-      const output: GetItemCommandOutput =
-        await this.client.send(getItemCommand);
+      const output: GetItemCommandOutput = await this.client.send(command);
       return output.Item || null;
     } catch (error) {
       this.handleError('GetItem', error);
@@ -76,10 +73,10 @@ export class AwsDynamoDbAdapter {
   }
 
   public async queryItems(
-    queryCommand: QueryCommand,
+    command: QueryCommand,
   ): Promise<Record<string, any>[] | null> {
     try {
-      const output: QueryCommandOutput = await this.client.send(queryCommand);
+      const output: QueryCommandOutput = await this.client.send(command);
       return output.Items || null;
     } catch (error) {
       this.handleError('QueryItems', error);
