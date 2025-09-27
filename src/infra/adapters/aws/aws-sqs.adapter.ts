@@ -3,7 +3,6 @@ import {
   SendMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import {
   ConsumedQueueMessage,
@@ -11,21 +10,16 @@ import {
   QueueReceiveOptions,
   QueueSendOptions,
 } from '../../../core/app/ports/queue-client.interface';
+import { AwsConnection } from './aws.connection';
 
 export class AwsSQSAdapter implements QueueClientInterface {
-  private readonly _client: SQSClient;
-
   constructor(
-    private configService: ConfigService,
+    private readonly awsConnection: AwsConnection<SQSClient>,
     private readonly logger: Logger,
-  ) {
-    this._client = new SQSClient({
-      region: this.configService.get('AWS_REGION')!,
-      credentials: {
-        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID')!,
-        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')!,
-      },
-    });
+  ) {}
+
+  private get client(): SQSClient {
+    return this.awsConnection.client;
   }
 
   public async receiveMessages<T>(
@@ -36,7 +30,7 @@ export class AwsSQSAdapter implements QueueClientInterface {
       MaxNumberOfMessages: options?.maxNumberOfMessages || 1,
       WaitTimeSeconds: 10,
     });
-    const output = await this._client.send(command);
+    const output = await this.client.send(command);
     return (output.Messages || []).map((message) => {
       if (!message?.Body) {
         throw new Error('[SQS] Message Body is empty.');
@@ -55,7 +49,7 @@ export class AwsSQSAdapter implements QueueClientInterface {
     }
     this.logger.log(`[SQS] Publishing message to queue: ${options.queueUrl}.`);
 
-    await this._client.send(
+    await this.client.send(
       new SendMessageCommand({
         QueueUrl: options.queueUrl,
         MessageBody: JSON.stringify(options.message),

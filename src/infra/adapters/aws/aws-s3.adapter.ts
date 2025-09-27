@@ -6,21 +6,21 @@ import {
 } from '@aws-sdk/client-s3';
 import { FileStorageInterface } from '../../../core/app/ports/file-storage.interface';
 import { ConfigService } from '@nestjs/config';
+import { AwsConnection } from './aws.connection';
 
 export class AwsS3Adapter implements FileStorageInterface {
-  private readonly _client: S3Client;
   private readonly _bucketName: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly awsConnection: AwsConnection<S3Client>,
+    private readonly configService: ConfigService,
+  ) {
     this._bucketName = this.configService.get<string>('BUCKET_NAME')!;
-    this._client = new S3Client({
-      region: this.configService.get('AWS_REGION')!,
-      credentials: {
-        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID')!,
-        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')!,
-      },
-    });
     Object.freeze(this);
+  }
+
+  private get client(): S3Client {
+    return this.awsConnection.client;
   }
 
   public async upload(
@@ -34,7 +34,7 @@ export class AwsS3Adapter implements FileStorageInterface {
       Body: content,
       ContentType: options?.contentType,
     });
-    await this._client.send(command);
+    await this.client.send(command);
   }
 
   public async download(key: string): Promise<Buffer> {
@@ -43,7 +43,7 @@ export class AwsS3Adapter implements FileStorageInterface {
       Key: key,
     });
 
-    const response = await this._client.send(command);
+    const response = await this.client.send(command);
     return response.Body?.transformToByteArray()
       ? Buffer.from(await response.Body.transformToByteArray())
       : Buffer.from([]);
@@ -54,6 +54,6 @@ export class AwsS3Adapter implements FileStorageInterface {
       Bucket: this._bucketName,
       Key: key,
     });
-    await this._client.send(command);
+    await this.client.send(command);
   }
 }

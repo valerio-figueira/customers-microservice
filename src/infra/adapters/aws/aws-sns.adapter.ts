@@ -9,24 +9,22 @@ import {
   PublisherOptions,
   MessageBrokerPublisherInterface,
 } from '../../../core/app/ports/message-broker.interface';
+import { AwsConnection } from './aws.connection';
 
 @Injectable()
 export class AwsSNSAdapter implements MessageBrokerPublisherInterface {
-  private readonly _client: SNSClient;
   private readonly _topicArn: string;
 
   constructor(
+    private readonly awsConnection: AwsConnection<SNSClient>,
     private configService: ConfigService,
     private readonly logger: Logger,
   ) {
     this._topicArn = this.configService.get('SNS_TOPIC_ARN')!;
-    this._client = new SNSClient({
-      region: this.configService.get('AWS_REGION')!,
-      credentials: {
-        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID')!,
-        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')!,
-      },
-    });
+  }
+
+  private get client(): SNSClient {
+    return this.awsConnection.client;
   }
 
   public async publish(options: PublisherOptions): Promise<void> {
@@ -37,7 +35,7 @@ export class AwsSNSAdapter implements MessageBrokerPublisherInterface {
     };
 
     try {
-      await this._client.send(new PublishCommand(params));
+      await this.client.send(new PublishCommand(params));
       this.logger.log(
         `Mensagem publicada com sucesso no tópico: ${this._topicArn}`,
       );
