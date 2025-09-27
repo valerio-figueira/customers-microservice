@@ -2,6 +2,7 @@ import {
   CustomerInterface,
   PersistedCustomerInterface,
 } from '../../core/domain/entities/interfaces/customer.interface';
+import { PersistedDocumentInterface } from '../../core/domain/entities/interfaces/document.interface';
 
 export class CustomerMapper {
   /**
@@ -22,6 +23,37 @@ export class CustomerMapper {
       gender: customer.gender.value,
       dateOfBirth: customer.dateOfBirth,
       avatarPath: customer.avatar.path,
+    };
+  }
+
+  static fromDynamo(
+    metadata: PersistedCustomerInterface,
+    documents: PersistedDocumentInterface[],
+  ): Omit<PersistedCustomerInterface, 'password'> {
+    Reflect.deleteProperty(metadata, 'password');
+    return {
+      id: metadata.id,
+      name: metadata.name,
+      email: metadata.email,
+      gender: metadata.gender,
+      phone: metadata.phone,
+      dateOfBirth: metadata.dateOfBirth,
+      avatarPath: metadata.avatarPath,
+      documents: documents.map((doc: PersistedDocumentInterface) => ({
+        id: doc.id,
+        customerId: doc.customerId,
+        type: doc.type,
+        value: doc.value,
+        issueDate: doc.issueDate,
+        issuingAuthority: doc.issuingAuthority,
+        expirationDate: doc.expirationDate,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+        deletedAt: doc.deletedAt,
+      })),
+      createdAt: metadata.createdAt,
+      updatedAt: metadata.updatedAt,
+      deletedAt: metadata.deletedAt,
     };
   }
 }

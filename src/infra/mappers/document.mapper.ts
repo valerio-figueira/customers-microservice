@@ -2,6 +2,7 @@ import {
   DocumentInterface,
   PersistedDocumentInterface,
 } from '../../core/domain/entities/interfaces/document.interface';
+import { PersistedCustomerInterface } from '../../core/domain/entities/interfaces/customer.interface';
 
 export class DocumentMapper {
   /**
@@ -21,6 +22,23 @@ export class DocumentMapper {
       issuingAuthority: document.issuingAuthority ?? null,
       issueDate: document.issueDate ?? null,
       expirationDate: document.expirationDate ?? null,
+    };
+  }
+
+  static fromDynamo(
+    document: PersistedDocumentInterface,
+  ): Omit<PersistedDocumentInterface, 'isExpired'> {
+    return {
+      id: document.id,
+      customerId: document.customerId,
+      type: document.type,
+      value: document.value,
+      issueDate: document.issueDate,
+      issuingAuthority: document.issuingAuthority,
+      expirationDate: document.expirationDate,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt,
+      deletedAt: document.deletedAt,
     };
   }
 }

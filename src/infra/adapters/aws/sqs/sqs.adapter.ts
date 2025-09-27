@@ -1,25 +1,16 @@
-import {
-  ReceiveMessageCommand,
-  SendMessageCommand,
-  SQSClient,
-} from '@aws-sdk/client-sqs';
+import { ReceiveMessageCommand, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { Logger } from '@nestjs/common';
 import {
   ConsumedQueueMessage,
   QueueClientInterface,
   QueueReceiveOptions,
   QueueSendOptions,
-} from '../../../core/app/ports/queue-client.interface';
-import { AwsConnection } from './aws.connection';
+} from '../../../../core/app/ports/queue-client.interface';
+import { SQSConnection } from './sqs.connection';
 
-export class AwsSQSAdapter implements QueueClientInterface {
-  constructor(
-    private readonly awsConnection: AwsConnection<SQSClient>,
-    private readonly logger: Logger,
-  ) {}
-
-  private get client(): SQSClient {
-    return this.awsConnection.client;
+export class SQSAdapter extends SQSConnection implements QueueClientInterface {
+  constructor(private readonly logger: Logger) {
+    super();
   }
 
   public async receiveMessages<T>(

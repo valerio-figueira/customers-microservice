@@ -14,11 +14,15 @@ import {
   CREATE_DOCUMENT_USECASE,
   CUSTOMER_REPOSITORY,
   DOCUMENT_REPOSITORY,
+  DYNAMO_DB_ADAPTER,
+  DYNAMO_DB_CUSTOMERS_REPOSITORY,
+  DYNAMO_DB_DOCUMENTS_REPOSITORY,
+  DYNAMO_DB_UNIT_OF_WORK,
   ID_GENERATOR,
   MESSAGE_BROKER_PUBLISHER,
   PASSWORD_HASHER,
   READ_ONE_CUSTOMER_USECASE,
-  UNIT_OF_WORK,
+  PRISMA_UNIT_OF_WORK,
 } from './infra/config/tokens';
 import { IdGeneratorAdapter } from './infra/adapters/ids/id-generator.adapter';
 import { BcryptPasswordHasherAdapter } from './infra/adapters/hashing/password-hasher.adapter';
@@ -31,6 +35,10 @@ import { CreateDocumentUseCase } from './core/app/usecases/create-document/creat
 import { DocumentsController } from './infra/http/documents.controller';
 import { ReadOneCustomerUseCase } from './core/app/usecases/read-customer/read-one-customer.usecase';
 import { CustomerRepositoryInterface } from './core/app/ports/repositories/customers.repository.interface';
+import { DynamoDbAdapter } from './infra/adapters/aws/dynamodb/dynamo-db.adapter';
+import { DynamodbCustomersRepository } from './infra/adapters/aws/dynamodb/repositories/dynamodb-customers.repository';
+import { DynamoDbDocumentsRepository } from './infra/adapters/aws/dynamodb/repositories/dynamodb-documents.repository';
+import { DynamoDbUnitOfWork } from './infra/adapters/aws/dynamodb/dynamodb-unit-of-work';
 
 @Module({
   imports: [PrismaModule, ClientsModule.register([RabbitMQConfig])],
@@ -61,10 +69,33 @@ import { CustomerRepositoryInterface } from './core/app/ports/repositories/custo
         unitOfWork: UnitOfWorkInterface,
         idGenerator: IdGeneratorInterface,
       ) => new CreateDocumentUseCase(unitOfWork, idGenerator),
-      inject: [UNIT_OF_WORK, ID_GENERATOR],
+      inject: [PRISMA_UNIT_OF_WORK, ID_GENERATOR],
     },
     {
-      provide: UNIT_OF_WORK,
+      provide: DYNAMO_DB_ADAPTER,
+      useFactory: () => new DynamoDbAdapter(),
+      inject: [],
+    },
+    {
+      provide: DYNAMO_DB_CUSTOMERS_REPOSITORY,
+      useFactory: (awsDynamoDbAdapter: DynamoDbAdapter) =>
+        new DynamodbCustomersRepository(awsDynamoDbAdapter),
+      inject: [DYNAMO_DB_ADAPTER],
+    },
+    {
+      provide: DYNAMO_DB_DOCUMENTS_REPOSITORY,
+      useFactory: (awsDynamoDbAdapter: DynamoDbAdapter) =>
+        new DynamoDbDocumentsRepository(awsDynamoDbAdapter),
+      inject: [DYNAMO_DB_ADAPTER],
+    },
+    {
+      provide: DYNAMO_DB_UNIT_OF_WORK,
+      useFactory: (dynamoDbAdapter: DynamoDbAdapter) =>
+        new DynamoDbUnitOfWork(dynamoDbAdapter),
+      inject: [DYNAMO_DB_ADAPTER],
+    },
+    {
+      provide: PRISMA_UNIT_OF_WORK,
       useFactory: (prisma: PrismaConnection) => new PrismaUnitOfWork(prisma),
       inject: [PrismaConnection],
     },
@@ -94,7 +125,7 @@ import { CustomerRepositoryInterface } from './core/app/ports/repositories/custo
           messageBrokerPublisher,
         ),
       inject: [
-        UNIT_OF_WORK,
+        DYNAMO_DB_UNIT_OF_WORK,
         PASSWORD_HASHER,
         ID_GENERATOR,
         MESSAGE_BROKER_PUBLISHER,

@@ -1,26 +1,19 @@
 import {
-  S3Client,
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import { FileStorageInterface } from '../../../core/app/ports/file-storage.interface';
+import { FileStorageInterface } from '../../../../core/app/ports/file-storage.interface';
 import { ConfigService } from '@nestjs/config';
-import { AwsConnection } from './aws.connection';
+import { S3Connection } from './s3.connection';
 
-export class AwsS3Adapter implements FileStorageInterface {
+export class S3Adapter extends S3Connection implements FileStorageInterface {
   private readonly _bucketName: string;
 
-  constructor(
-    private readonly awsConnection: AwsConnection<S3Client>,
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
+    super();
     this._bucketName = this.configService.get<string>('BUCKET_NAME')!;
     Object.freeze(this);
-  }
-
-  private get client(): S3Client {
-    return this.awsConnection.client;
   }
 
   public async upload(

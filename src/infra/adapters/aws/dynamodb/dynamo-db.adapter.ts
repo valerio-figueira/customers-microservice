@@ -1,11 +1,11 @@
 import {
-  DynamoDBClient,
   GetItemCommand,
   GetItemCommandOutput,
   PutItemCommand,
   PutItemCommandInput,
   PutItemCommandOutput,
   QueryCommand,
+  QueryCommandInput,
   QueryCommandOutput,
   TransactWriteItem,
   TransactWriteItemsCommand,
@@ -13,18 +13,15 @@ import {
   UpdateItemCommandInput,
   UpdateItemCommandOutput,
 } from '@aws-sdk/client-dynamodb';
-import { Logger } from '@nestjs/common';
-import { AwsConnection } from '../aws.connection';
 import { RepositoryInternalError } from '../../../../core/app/exceptions/repository-internal.error';
+import { DynamoDbConnection } from './dynamodb.connection';
+import { Logger } from '@nestjs/common';
 
-export class AwsDynamoDbAdapter {
-  constructor(
-    private readonly awsConnection: AwsConnection<DynamoDBClient>,
-    private readonly logger: Logger,
-  ) {}
+export class DynamoDbAdapter extends DynamoDbConnection {
+  private readonly logger = new Logger(DynamoDbAdapter.name);
 
-  private get client(): DynamoDBClient {
-    return this.awsConnection.client;
+  constructor() {
+    super();
   }
 
   public async transactWriteItem(
@@ -65,6 +62,9 @@ export class AwsDynamoDbAdapter {
     command: GetItemCommand,
   ): Promise<Record<string, any> | null> {
     try {
+      this.logger.log(
+        `[DynamoDB] - GetItem Command: ${JSON.stringify(command)}`,
+      );
       const output: GetItemCommandOutput = await this.client.send(command);
       return output.Item || null;
     } catch (error) {
@@ -76,7 +76,11 @@ export class AwsDynamoDbAdapter {
     command: QueryCommand,
   ): Promise<Record<string, any>[] | null> {
     try {
-      const output: QueryCommandOutput = await this.client.send(command);
+      this.logger.log(`[DynamoDB] - Query Command: ${JSON.stringify(command)}`);
+      const output: QueryCommandOutput = await this.client.send<
+        QueryCommandInput,
+        QueryCommandOutput
+      >(command);
       return output.Items || null;
     } catch (error) {
       this.handleError('QueryItems', error);
@@ -84,9 +88,7 @@ export class AwsDynamoDbAdapter {
   }
 
   private handleError(operation: string, error: unknown): never {
-    this.logger.error(`[DynamoDB] ${operation} failed on table`, error);
-    throw new RepositoryInternalError(
-      `[DynamoDBAdapter] ${operation} failed: ${JSON.stringify(error)}`,
-    );
+    this.logger.error(`[DynamoDB][ERROR] ${operation}`, error);
+    throw new RepositoryInternalError(`[DynamoDB][ERROR] ${operation}.`);
   }
 }

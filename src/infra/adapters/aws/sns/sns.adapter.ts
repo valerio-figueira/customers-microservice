@@ -1,30 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  SNSClient,
-  PublishCommand,
-  PublishCommandInput,
-} from '@aws-sdk/client-sns';
+import { PublishCommand, PublishCommandInput } from '@aws-sdk/client-sns';
 import { ConfigService } from '@nestjs/config';
 import {
   PublisherOptions,
   MessageBrokerPublisherInterface,
-} from '../../../core/app/ports/message-broker.interface';
-import { AwsConnection } from './aws.connection';
+} from '../../../../core/app/ports/message-broker.interface';
+import { SNSConnection } from './sns.connection';
 
 @Injectable()
-export class AwsSNSAdapter implements MessageBrokerPublisherInterface {
+export class SNSAdapter
+  extends SNSConnection
+  implements MessageBrokerPublisherInterface
+{
   private readonly _topicArn: string;
 
   constructor(
-    private readonly awsConnection: AwsConnection<SNSClient>,
     private configService: ConfigService,
     private readonly logger: Logger,
   ) {
+    super();
     this._topicArn = this.configService.get('SNS_TOPIC_ARN')!;
-  }
-
-  private get client(): SNSClient {
-    return this.awsConnection.client;
   }
 
   public async publish(options: PublisherOptions): Promise<void> {
