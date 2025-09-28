@@ -1,17 +1,17 @@
 import { ReadDocumentOutput } from '../read-document/read-document.interface';
-import { GenderType } from '../../../domain/entities/interfaces/customer.interface';
+import { EmailInterface } from '../../../domain/entities/value-objects/email.vo';
+import { PhoneInterface } from '../../../domain/entities/value-objects/interfaces/phone.interface';
+import { GenderInterface } from '../../../domain/entities/value-objects/interfaces/gender.interface';
+import { DateOfBirthInterface } from '../../../domain/entities/value-objects/interfaces/date-of-birth.interface';
 
 export interface ReadOneCustomerOutput {
   id: string;
   name: string;
-  email: string;
-  phone: string;
-  gender: GenderType;
-  dateOfBirth: Date;
+  email: EmailInterface;
+  phone: PhoneInterface;
+  gender: GenderInterface;
+  dateOfBirth: DateOfBirthInterface;
   documents: ReadDocumentOutput[];
-  createdAt: Date;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
 }
 
 export interface ReadOneCustomerUseCaseInterface {

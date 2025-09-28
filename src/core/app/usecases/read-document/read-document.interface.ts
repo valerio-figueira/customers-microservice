@@ -7,7 +7,4 @@ export interface ReadDocumentInput {
 export interface ReadDocumentOutput
   extends Omit<DocumentInterface, 'isExpired'> {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
 }

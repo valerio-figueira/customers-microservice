@@ -1,4 +1,4 @@
-import { PersistedCustomerInterface } from '../../../domain/entities/interfaces/customer.interface';
+import { CustomerInterface } from '../../../domain/entities/interfaces/customer.interface';
 
 export interface UpdateAvatarUseCaseInterface {
   update(input: UpdateAvatarInput): Promise<UpdateAvatarOutput>;
@@ -18,4 +18,4 @@ export interface UpdateAvatarInput {
   contentType: string;
 }
 
-export type UpdateAvatarOutput = Omit<PersistedCustomerInterface, 'password'>;
+export type UpdateAvatarOutput = Omit<CustomerInterface, 'password'>;

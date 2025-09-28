@@ -3,6 +3,8 @@ import {
   PersistedCustomerInterface,
 } from '../../core/domain/entities/interfaces/customer.interface';
 import { PersistedDocumentInterface } from '../../core/domain/entities/interfaces/document.interface';
+import { CustomerBuilder } from '../../core/domain/builders/customer.builder';
+import { Customer } from '../../core/domain/entities/customer.entity';
 
 export class CustomerMapper {
   /**
@@ -24,6 +26,20 @@ export class CustomerMapper {
       dateOfBirth: customer.dateOfBirth.value,
       avatarPath: customer.avatar.path,
     };
+  }
+
+  static toDomain(
+    customer: Omit<PersistedCustomerInterface, 'password'>,
+  ): Customer {
+    return new CustomerBuilder()
+      .withId(customer.id)
+      .withName(customer.name)
+      .withEmail(customer.email)
+      .withGender(customer.gender)
+      .withPhone(customer.phone)
+      .withDocuments(customer.documents)
+      .withDateOfBirth(customer.dateOfBirth)
+      .build();
   }
 
   static fromDynamo(

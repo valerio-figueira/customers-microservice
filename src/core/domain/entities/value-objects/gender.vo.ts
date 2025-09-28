@@ -1,16 +1,20 @@
 import { GenderEnum } from '../../enums/gender.enum';
 import { DomainGenderError } from '../../exceptions/domain-gender.error';
 import { GenderInterface } from './interfaces/gender.interface';
+import { GenderType } from '../interfaces/customer.interface';
 
 export class Gender implements GenderInterface {
-  private readonly VALID_VALUES = [GenderEnum.MALE, GenderEnum.FEMALE];
-  private readonly _value: GenderEnum;
+  private readonly VALID_VALUES: GenderType[] = [
+    GenderEnum.MALE,
+    GenderEnum.FEMALE,
+  ];
+  private readonly _value: GenderType;
 
-  constructor(value: GenderEnum) {
+  constructor(value: GenderType) {
     this._value = this.create(value);
   }
 
-  private create(value: GenderEnum): GenderEnum {
+  private create(value: GenderType): GenderType {
     if (!this.VALID_VALUES.includes(value)) {
       throw new DomainGenderError(
         `Gênero inválido: "${value}". Aceitos: ${this.VALID_VALUES.join(', ')}`,
@@ -19,7 +23,7 @@ export class Gender implements GenderInterface {
     return value;
   }
 
-  public get value(): GenderEnum {
+  public get value(): GenderType {
     return this._value;
   }
 

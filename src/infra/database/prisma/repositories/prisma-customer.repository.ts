@@ -3,16 +3,14 @@ import { Customer } from '../../../../core/domain/entities/customer.entity';
 import { PrismaConnection } from '../prisma.connection';
 import { CustomerMapper } from '../../../mappers/customer.mapper';
 import { PrismaTransaction } from './prisma-unit-of-work';
-import { PersistedCustomerInterface } from '../../../../core/domain/entities/interfaces/customer.interface';
+import { CustomerInterface } from '../../../../core/domain/entities/interfaces/customer.interface';
 import { DocumentMapper } from '../../../mappers/document.mapper';
 import { RepositoryInternalError } from '../../../../core/app/exceptions/repository-internal.error';
 
 export class PrismaCustomerRepository implements CustomerRepositoryInterface {
   constructor(private readonly prisma: PrismaConnection | PrismaTransaction) {}
 
-  public async save(
-    customer: Customer,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'>> {
+  public async save(customer: Customer): Promise<CustomerInterface> {
     const { id } = await this.prisma.customer.create({
       data: CustomerMapper.toPersistence(customer),
       select: { id: true },
@@ -37,10 +35,8 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
     return persisted;
   }
 
-  public async findById(
-    id: string,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'> | null> {
-    return this.prisma.customer.findUnique({
+  public async findById(id: string): Promise<CustomerInterface | null> {
+    const persistence = await this.prisma.customer.findUnique({
       where: { id },
       select: {
         id: true,
@@ -56,6 +52,8 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
         deletedAt: true,
       },
     });
+    if (!persistence) return null;
+    return CustomerMapper.toDomain(persistence);
   }
 
   public async exists(id: string): Promise<boolean> {
@@ -77,8 +75,8 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
   public async updateAvatarPath(
     id: string,
     avatarPath: string,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'>> {
-    return this.prisma.customer.update({
+  ): Promise<CustomerInterface> {
+    const persistence = await this.prisma.customer.update({
       where: { id },
       data: { avatarPath },
       select: {
@@ -95,5 +93,6 @@ export class PrismaCustomerRepository implements CustomerRepositoryInterface {
         deletedAt: true,
       },
     });
+    return CustomerMapper.toDomain(persistence);
   }
 }

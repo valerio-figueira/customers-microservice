@@ -24,9 +24,7 @@ export class DynamodbCustomersRepository
 
   constructor(private readonly dynamoDb: DynamoDbAdapter) {}
 
-  public async save(
-    customer: CustomerInterface,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'>> {
+  public async save(customer: CustomerInterface): Promise<CustomerInterface> {
     const customerPersistence = CustomerMapper.toPersistence(customer);
 
     // Cria transação (Customer + E-mail Policy + Documents)
@@ -130,20 +128,18 @@ export class DynamodbCustomersRepository
       }),
     ]);
 
-    const persisted = await this.findById(customer.id);
+    const domain = await this.findById(customer.id);
 
-    if (!persisted) {
+    if (!domain) {
       throw new RepositoryInternalError(
         `Erro de persistência - Usuário não encontrado: ${customer.id}`,
       );
     }
 
-    return persisted;
+    return domain;
   }
 
-  public async findById(
-    id: string,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'> | null> {
+  public async findById(id: string): Promise<CustomerInterface | null> {
     // Query todos os itens do cliente (metadata + documents)
     const command = new QueryCommand({
       TableName: this.tableName,
@@ -157,15 +153,16 @@ export class DynamodbCustomersRepository
     if (!output || output?.length === 0) return null;
 
     const items = output.map((i) => unmarshall(i));
-    const metadata = items.find((i) => i.itemType === 'Customer');
-    const documents = items.filter((i) => i.itemType === 'Document');
+    const metadata = <PersistedCustomerInterface>(
+      items.find((i) => i.itemType === 'Customer')
+    );
+    const documents = <PersistedDocumentInterface[]>(
+      items.filter((i) => i.itemType === 'Document')
+    );
 
     if (!metadata) return null;
-
-    return CustomerMapper.fromDynamo(
-      <PersistedCustomerInterface>metadata,
-      <PersistedDocumentInterface[]>documents,
-    );
+    Object.assign(metadata, { documents });
+    return CustomerMapper.toDomain(metadata);
   }
 
   public async existsEmail(email: string): Promise<boolean> {
@@ -197,7 +194,7 @@ export class DynamodbCustomersRepository
   public async updateAvatarPath(
     id: string,
     avatarPath: string,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'>> {
+  ): Promise<CustomerInterface> {
     const command = new UpdateItemCommand({
       TableName: this.tableName,
       Key: marshall({

@@ -2,9 +2,11 @@ import { Email } from '../value-objects/email.vo';
 import { Phone } from '../value-objects/phone.vo';
 import { Gender } from '../value-objects/gender.vo';
 import { Document } from '../document.entity';
-import { PersistedDocumentInterface } from './document.interface';
+import {
+  DocumentTypes,
+  PersistedDocumentInterface,
+} from './document.interface';
 import { GenderEnum } from '../../enums/gender.enum';
-import { DocumentTypeEnum } from '../../enums/document-type.enum';
 import { Avatar } from '../value-objects/avatar.vo';
 import { Address } from '../address.entity';
 import { Password } from '../value-objects/password.vo';
@@ -42,7 +44,7 @@ export interface PersistedCustomerInterface {
 }
 
 export interface CustomerDocumentInterface {
-  type: DocumentTypeEnum;
+  type: DocumentTypes;
   value: string;
   issuingAuthority: string | null;
   issueDate: Date | null;

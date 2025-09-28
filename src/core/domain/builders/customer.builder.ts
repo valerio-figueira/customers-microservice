@@ -3,8 +3,10 @@ import { Phone } from '../entities/value-objects/phone.vo';
 import { Gender } from '../entities/value-objects/gender.vo';
 import { Email } from '../entities/value-objects/email.vo';
 import { Document } from '../entities/document.entity';
-import { GenderEnum } from '../enums/gender.enum';
-import { CustomerDocumentInterface } from '../entities/interfaces/customer.interface';
+import {
+  CustomerDocumentInterface,
+  GenderType,
+} from '../entities/interfaces/customer.interface';
 import { IdGeneratorInterface } from '../../app/ports/id-generator.interface';
 import { Avatar } from '../entities/value-objects/avatar.vo';
 import { Address } from '../entities/address.entity';
@@ -30,7 +32,7 @@ export class CustomerBuilder {
   private _avatar: Avatar = new Avatar();
   private _addresses: Address[] = [];
 
-  constructor(private readonly idGenerator: IdGeneratorInterface) {}
+  constructor(private readonly idGenerator?: IdGeneratorInterface) {}
 
   public withId(id: string): this {
     this._id = id;
@@ -57,7 +59,7 @@ export class CustomerBuilder {
     return this;
   }
 
-  public withGender(gender: GenderEnum): this {
+  public withGender(gender: GenderType): this {
     this._gender = new Gender(gender);
     return this;
   }
@@ -80,7 +82,7 @@ export class CustomerBuilder {
     }
     documents.forEach((d) => {
       const newDoc = new Document({
-        id: d.id ? d.id : this.idGenerator.generate('doc'),
+        id: d.id ? d.id : this.generateId('doc'),
         customerId: this._id,
         type: d.type,
         value: d.value,
@@ -111,6 +113,13 @@ export class CustomerBuilder {
       avatar: this._avatar,
       addresses: this._addresses,
     });
+  }
+
+  private generateId(prefix: string): string {
+    if (!this.idGenerator) {
+      throw new DomainCustomerError('O gerador de id é obrigatório.');
+    }
+    return this.idGenerator.generate(prefix);
   }
 
   private validate(): void {

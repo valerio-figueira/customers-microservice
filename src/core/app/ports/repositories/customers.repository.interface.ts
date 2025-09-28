@@ -1,5 +1,5 @@
 import { Customer } from '../../../domain/entities/customer.entity';
-import { PersistedCustomerInterface } from '../../../domain/entities/interfaces/customer.interface';
+import { CustomerInterface } from '../../../domain/entities/interfaces/customer.interface';
 
 /**
  * @interface CustomerRepository
@@ -9,20 +9,13 @@ import { PersistedCustomerInterface } from '../../../domain/entities/interfaces/
  * não tenha conhecimento da infraestrutura (e.g., banco de dados).
  */
 export interface CustomerRepositoryInterface {
-  save(
-    customer: Customer,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'>>;
+  save(customer: Customer): Promise<CustomerInterface>;
 
-  findById(
-    id: string,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'> | null>;
+  findById(id: string): Promise<CustomerInterface | null>;
 
   exists(id: string): Promise<boolean>;
 
   existsEmail(email: string): Promise<boolean>;
 
-  updateAvatarPath(
-    id: string,
-    avatarPath: string,
-  ): Promise<Omit<PersistedCustomerInterface, 'password'>>;
+  updateAvatarPath(id: string, avatarPath: string): Promise<CustomerInterface>;
 }

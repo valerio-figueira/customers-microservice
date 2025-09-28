@@ -18,7 +18,4 @@ export interface CreateDocumentOutput
   extends Omit<DocumentInterface, 'isExpired'> {
   id: string;
   customerId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
 }

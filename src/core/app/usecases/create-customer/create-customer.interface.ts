@@ -3,6 +3,10 @@ import {
   CreateDocumentOutput,
 } from '../create-document/create-document.interface';
 import { GenderEnum } from '../../../domain/enums/gender.enum';
+import { GenderInterface } from '../../../domain/entities/value-objects/interfaces/gender.interface';
+import { EmailInterface } from '../../../domain/entities/value-objects/email.vo';
+import { DateOfBirthInterface } from '../../../domain/entities/value-objects/interfaces/date-of-birth.interface';
+import { PhoneInterface } from '../../../domain/entities/value-objects/interfaces/phone.interface';
 
 export interface CreateCustomerInterface {
   create: (input: CreateCustomerInput) => Promise<CreateCustomerOutput>;
@@ -21,12 +25,9 @@ export interface CreateCustomerInput {
 export interface CreateCustomerOutput {
   id: string;
   name: string;
-  email: string;
-  phone: string;
-  gender: GenderEnum | 'MALE' | 'FEMALE' | 'OTHER';
-  dateOfBirth: Date;
+  email: EmailInterface;
+  phone: PhoneInterface;
+  gender: GenderInterface;
+  dateOfBirth: DateOfBirthInterface;
   documents: CreateDocumentOutput[];
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
 }
