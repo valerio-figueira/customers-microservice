@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid';
 import { IdGeneratorInterface } from '../../../core/app/ports/id-generator.interface';
 
-export class IdGeneratorAdapter implements IdGeneratorInterface {
+export class NanoIdGeneratorAdapter implements IdGeneratorInterface {
   private readonly generateId: (size?: number) => string;
   private readonly ALPHABET: string = '0123456789abcdefghijklmnopqrstuvwxyz';
   private readonly ID_LENGTH: number = 24;
