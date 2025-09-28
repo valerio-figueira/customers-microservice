@@ -5,7 +5,7 @@ import {
   UpdateAvatarUseCaseInterface,
   UpdateAvatarOutput,
 } from './update-avatar.interface';
-import { Avatar } from '../../../domain/entities/avatar.entity';
+import { Avatar } from '../../../domain/entities/value-objects/avatar.vo';
 import { ImageProcessorInterface } from '../../ports/image-processor.interface';
 import { ApplicationValidationError } from '../../exceptions/application-validation.error';
 

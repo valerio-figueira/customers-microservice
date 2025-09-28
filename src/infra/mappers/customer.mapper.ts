@@ -21,7 +21,7 @@ export class CustomerMapper {
       password: customer.password.hash,
       phone: customer.phone.value,
       gender: customer.gender.value,
-      dateOfBirth: customer.dateOfBirth,
+      dateOfBirth: customer.dateOfBirth.value,
       avatarPath: customer.avatar.path,
     };
   }

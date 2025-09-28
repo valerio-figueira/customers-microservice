@@ -1,5 +1,5 @@
-import { DomainEmailError } from '../exceptions/domain-email.error';
-import { RepositoryFactoryInterface } from '../../app/ports/unit-of-work.interface';
+import { DomainEmailError } from '../../exceptions/domain-email.error';
+import { RepositoryFactoryInterface } from '../../../app/ports/unit-of-work.interface';
 import { CustomerPolicyInterface } from './interfaces/customer-policy.interface';
 
 export class CustomerPolicy implements CustomerPolicyInterface {

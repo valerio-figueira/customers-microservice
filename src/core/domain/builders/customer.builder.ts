@@ -1,14 +1,14 @@
 import { Customer } from '../entities/customer.entity';
-import { Phone } from '../entities/phone.entity';
-import { Gender } from '../entities/gender.entity';
-import { Email } from '../entities/email.entity';
+import { Phone } from '../entities/value-objects/phone.vo';
+import { Gender } from '../entities/value-objects/gender.vo';
+import { Email } from '../entities/value-objects/email.vo';
 import { Document } from '../entities/document.entity';
 import { GenderEnum } from '../enums/gender.enum';
 import { CustomerDocumentInterface } from '../entities/interfaces/customer.interface';
 import { IdGeneratorInterface } from '../../app/ports/id-generator.interface';
-import { Avatar } from '../entities/avatar.entity';
+import { Avatar } from '../entities/value-objects/avatar.vo';
 import { Address } from '../entities/address.entity';
-import { Password } from '../entities/password.entity';
+import { Password } from '../entities/value-objects/password.vo';
 import { DomainDocumentError } from '../exceptions/domain-document.error';
 import { DomainCustomerError } from '../exceptions/domain-customer.error';
 import { DomainEmailError } from '../exceptions/domain-email.error';
@@ -16,6 +16,7 @@ import { DomainPasswordError } from '../exceptions/domain-password.error';
 import { DomainPhoneError } from '../exceptions/domain-phone.error';
 import { DomainGenderError } from '../exceptions/domain-gender.error';
 import { DomainDateOfBirthError } from '../exceptions/domain-date-of-birth.error';
+import { DateOfBirth } from '../entities/value-objects/date-of-birth.vo';
 
 export class CustomerBuilder {
   private _id: string;
@@ -24,7 +25,7 @@ export class CustomerBuilder {
   private _password: Password;
   private _phone: Phone;
   private _gender: Gender;
-  private _dateOfBirth: Date;
+  private _dateOfBirth: DateOfBirth;
   private _documents: Document[] = [];
   private _avatar: Avatar = new Avatar();
   private _addresses: Address[] = [];
@@ -65,7 +66,7 @@ export class CustomerBuilder {
     if (!date) {
       throw new DomainDateOfBirthError('A data de nascimento é obrigatória.');
     }
-    this._dateOfBirth = new Date(date);
+    this._dateOfBirth = new DateOfBirth(date);
     return this;
   }
 

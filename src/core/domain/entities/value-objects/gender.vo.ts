@@ -1,7 +1,8 @@
-import { GenderEnum } from '../enums/gender.enum';
-import { DomainGenderError } from '../exceptions/domain-gender.error';
+import { GenderEnum } from '../../enums/gender.enum';
+import { DomainGenderError } from '../../exceptions/domain-gender.error';
+import { GenderInterface } from './interfaces/gender.interface';
 
-export class Gender {
+export class Gender implements GenderInterface {
   private readonly VALID_VALUES = [GenderEnum.MALE, GenderEnum.FEMALE];
   private readonly _value: GenderEnum;
 

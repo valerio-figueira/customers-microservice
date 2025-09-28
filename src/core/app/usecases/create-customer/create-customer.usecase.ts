@@ -7,13 +7,13 @@ import { PasswordHasherInterface } from '../../ports/password-hasher.interface';
 import { UnitOfWorkInterface } from '../../ports/unit-of-work.interface';
 import { IdGeneratorInterface } from '../../ports/id-generator.interface';
 import { CustomerBuilder } from '../../../domain/builders/customer.builder';
-import { Password } from '../../../domain/entities/password.entity';
+import { Password } from '../../../domain/entities/value-objects/password.vo';
 import {
   MessageBrokerPublisherInterface,
   MessageBrokerPattern,
 } from '../../ports/message-broker.interface';
-import { DocumentPolicy } from '../../../domain/entities/document-policy';
-import { CustomerPolicy } from '../../../domain/entities/customer-policy';
+import { DocumentPolicy } from '../../../domain/entities/policies/document-policy';
+import { CustomerPolicy } from '../../../domain/entities/policies/customer-policy';
 
 export class CreateCustomerUseCase implements CreateCustomerInterface {
   constructor(

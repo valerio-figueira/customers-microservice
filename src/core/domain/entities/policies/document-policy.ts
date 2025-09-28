@@ -1,8 +1,8 @@
-import { DomainDocumentError } from '../exceptions/domain-document.error';
-import { RepositoryFactoryInterface } from '../../app/ports/unit-of-work.interface';
-import { DocumentInterface } from './interfaces/document.interface';
+import { DomainDocumentError } from '../../exceptions/domain-document.error';
+import { RepositoryFactoryInterface } from '../../../app/ports/unit-of-work.interface';
+import { DocumentInterface } from '../interfaces/document.interface';
 import { DocumentPolicyInterface } from './interfaces/document-policy.interface';
-import { Document } from './document.entity';
+import { Document } from '../document.entity';
 
 export class DocumentPolicy implements DocumentPolicyInterface {
   constructor(private readonly repositories: RepositoryFactoryInterface) {}

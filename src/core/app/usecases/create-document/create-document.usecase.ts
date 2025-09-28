@@ -9,7 +9,7 @@ import {
 } from '../../ports/unit-of-work.interface';
 import { Document } from '../../../domain/entities/document.entity';
 import { IdGeneratorInterface } from '../../ports/id-generator.interface';
-import { DocumentPolicy } from '../../../domain/entities/document-policy';
+import { DocumentPolicy } from '../../../domain/entities/policies/document-policy';
 
 export class CreateDocumentUseCase implements CreateDocumentUseCaseInterface {
   constructor(

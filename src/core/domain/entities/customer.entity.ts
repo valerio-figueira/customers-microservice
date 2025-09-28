@@ -1,15 +1,16 @@
 import { Address } from './address.entity';
 import { Document } from './document.entity';
-import { Email } from './email.entity';
-import { Phone } from './phone.entity';
-import { Gender } from './gender.entity';
+import { Email } from './value-objects/email.vo';
+import { Phone } from './value-objects/phone.vo';
+import { Gender } from './value-objects/gender.vo';
 import {
   CustomerAttributes,
   CustomerInterface,
 } from './interfaces/customer.interface';
-import { Avatar } from './avatar.entity';
-import { Password } from './password.entity';
+import { Avatar } from './value-objects/avatar.vo';
+import { Password } from './value-objects/password.vo';
 import { DomainCustomerError } from '../exceptions/domain-customer.error';
+import { DateOfBirth } from './value-objects/date-of-birth.vo';
 
 export class Customer implements CustomerInterface {
   private readonly _id: string;
@@ -18,7 +19,7 @@ export class Customer implements CustomerInterface {
   private readonly _password: Password;
   private readonly _phone: Phone;
   private readonly _gender: Gender;
-  private readonly _dateOfBirth: Date;
+  private readonly _dateOfBirth: DateOfBirth;
   private readonly _documents: Document[];
   private readonly _avatar: Avatar;
   private readonly _addresses: Address[];
@@ -64,7 +65,7 @@ export class Customer implements CustomerInterface {
     return this._gender;
   }
 
-  public get dateOfBirth(): Date {
+  public get dateOfBirth(): DateOfBirth {
     return this._dateOfBirth;
   }
 
@@ -82,16 +83,5 @@ export class Customer implements CustomerInterface {
 
   public get avatarPath(): string | null {
     return this._avatar.path;
-  }
-
-  public isOver18(): boolean {
-    const today = new Date();
-    const birthDate = new Date(this._dateOfBirth);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age >= 18;
   }
 }

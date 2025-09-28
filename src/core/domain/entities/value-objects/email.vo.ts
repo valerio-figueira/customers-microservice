@@ -1,6 +1,10 @@
-import { DomainEmailError } from '../exceptions/domain-email.error';
+import { DomainEmailError } from '../../exceptions/domain-email.error';
 
-export class Email {
+export interface EmailInterface {
+  value: string;
+}
+
+export class Email implements EmailInterface {
   public readonly value: string;
 
   constructor(value: string) {

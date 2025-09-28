@@ -1,13 +1,14 @@
-import { Email } from '../email.entity';
-import { Phone } from '../phone.entity';
-import { Gender } from '../gender.entity';
+import { Email } from '../value-objects/email.vo';
+import { Phone } from '../value-objects/phone.vo';
+import { Gender } from '../value-objects/gender.vo';
 import { Document } from '../document.entity';
 import { PersistedDocumentInterface } from './document.interface';
 import { GenderEnum } from '../../enums/gender.enum';
 import { DocumentTypeEnum } from '../../enums/document-type.enum';
-import { Avatar } from '../avatar.entity';
+import { Avatar } from '../value-objects/avatar.vo';
 import { Address } from '../address.entity';
-import { Password } from '../password.entity';
+import { Password } from '../value-objects/password.vo';
+import { DateOfBirth } from '../value-objects/date-of-birth.vo';
 
 export interface CustomerInterface {
   readonly id: string;
@@ -16,15 +17,13 @@ export interface CustomerInterface {
   readonly password: Password;
   readonly phone: Phone;
   readonly gender: Gender;
-  readonly dateOfBirth: Date;
+  readonly dateOfBirth: DateOfBirth;
   readonly documents: Document[];
   readonly avatar: Avatar;
   readonly addresses: Address[];
-
-  isOver18(): boolean;
 }
 
-export type CustomerAttributes = Omit<CustomerInterface, 'isOver18'>;
+export type CustomerAttributes = CustomerInterface;
 export type GenderType = GenderEnum | 'MALE' | 'FEMALE' | 'OTHER';
 
 export interface PersistedCustomerInterface {

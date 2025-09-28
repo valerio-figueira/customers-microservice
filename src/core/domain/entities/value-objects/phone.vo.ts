@@ -1,6 +1,7 @@
-import { DomainPhoneError } from '../exceptions/domain-phone.error';
+import { DomainPhoneError } from '../../exceptions/domain-phone.error';
+import { PhoneInterface } from './interfaces/phone.interface';
 
-export class Phone {
+export class Phone implements PhoneInterface {
   public readonly value: string;
 
   constructor(value: string) {

@@ -1,5 +1,5 @@
 import { AvatarInterface } from './interfaces/avatar.interface';
-import { DomainAvatarError } from '../exceptions/domain-avatar.error';
+import { DomainAvatarError } from '../../exceptions/domain-avatar.error';
 
 export class Avatar implements AvatarInterface {
   private readonly _path: string | null;

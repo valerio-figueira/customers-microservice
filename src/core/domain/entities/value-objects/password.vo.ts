@@ -1,6 +1,6 @@
 import { PasswordInterface } from './interfaces/password.interface';
-import { PasswordHasherInterface } from '../../app/ports/password-hasher.interface';
-import { DomainPasswordError } from '../exceptions/domain-password.error';
+import { PasswordHasherInterface } from '../../../app/ports/password-hasher.interface';
+import { DomainPasswordError } from '../../exceptions/domain-password.error';
 
 export class Password implements PasswordInterface {
   private readonly _hash: string;

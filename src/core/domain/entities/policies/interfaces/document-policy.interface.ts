@@ -1,5 +1,5 @@
-import { DocumentInterface } from './document.interface';
-import { Document } from '../document.entity';
+import { DocumentInterface } from '../../interfaces/document.interface';
+import { Document } from '../../document.entity';
 
 export interface DocumentPolicyInterface {
   ensureCustomerExists(customerId: string): Promise<void>;
