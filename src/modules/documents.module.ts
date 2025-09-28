@@ -3,8 +3,8 @@ import { PrismaModule } from './prisma.module';
 import { PrismaConnection } from '../infra/database/prisma/prisma.connection';
 import {
   CREATE_DOCUMENT_USECASE,
+  DYNAMO_DB_UNIT_OF_WORK,
   ID_GENERATOR,
-  PRISMA_UNIT_OF_WORK,
 } from '../infra/config/tokens';
 import { UnitOfWorkInterface } from '../core/app/ports/unit-of-work.interface';
 import { IdGeneratorInterface } from '../core/app/ports/id-generator.interface';
@@ -22,7 +22,7 @@ import { AwsModule } from './aws.module';
         unitOfWork: UnitOfWorkInterface,
         idGenerator: IdGeneratorInterface,
       ) => new CreateDocumentUseCase(unitOfWork, idGenerator),
-      inject: [PRISMA_UNIT_OF_WORK, ID_GENERATOR],
+      inject: [DYNAMO_DB_UNIT_OF_WORK, ID_GENERATOR],
     },
   ],
   exports: [CREATE_DOCUMENT_USECASE],

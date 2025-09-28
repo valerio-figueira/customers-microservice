@@ -114,8 +114,26 @@ export class DynamoDbDocumentsRepository
         PK: DynamoKeys.documentValuePK(value),
         SK: DynamoKeys.documentValueSK(),
       }),
+      AttributesToGet: ['id', 'customerId'],
     });
 
+    const lookup = await this.dynamoDb.getItem(command);
+    if (!lookup) return null;
+    const item = <{ id: string; customerId: string }>unmarshall(lookup);
+    return this.findMainRecord(item.id, item.customerId);
+  }
+
+  public async findMainRecord(
+    documentId: string,
+    customerId: string,
+  ): Promise<PersistedDocumentInterface | null> {
+    const command = new GetItemCommand({
+      TableName: this.tableName,
+      Key: marshall({
+        PK: DynamoKeys.documentPK(customerId),
+        SK: DynamoKeys.documentSK(documentId),
+      }),
+    });
     const output = await this.dynamoDb.getItem(command);
     if (!output) return null;
     return <PersistedDocumentInterface>unmarshall(output);
@@ -130,6 +148,7 @@ export class DynamoDbDocumentsRepository
         PK: DynamoKeys.customerDocumentIdPK(options.id),
         SK: DynamoKeys.customerDocumentIdSK(),
       }),
+      AttributesToGet: ['id', 'value'],
     });
 
     const lookup = await this.dynamoDb.getItem(command);
@@ -137,11 +156,11 @@ export class DynamoDbDocumentsRepository
       throw new RepositoryInternalError(`Documento não encontrado.`);
     }
 
-    const document = await this.findDocument(<string>lookup.value);
-    if (!document) {
+    const output = await this.findDocument(<string>unmarshall(lookup).value);
+    if (!output) {
       throw new RepositoryInternalError(`Documento não encontrado.`);
     }
-    return document;
+    return output;
   }
 
   public async findByCustomerAndType(

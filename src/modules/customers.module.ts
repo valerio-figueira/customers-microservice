@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import {
   CREATE_CUSTOMER_USECASE,
-  CUSTOMER_REPOSITORY,
+  DYNAMO_DB_CUSTOMERS_REPOSITORY,
   DYNAMO_DB_UNIT_OF_WORK,
   ID_GENERATOR,
   MESSAGE_BROKER_PUBLISHER,
@@ -27,7 +27,7 @@ import { RabbitMqModule } from './rabbitmq.module';
       provide: READ_ONE_CUSTOMER_USECASE,
       useFactory: (customerRepository: CustomerRepositoryInterface) =>
         new ReadOneCustomerUseCase(customerRepository),
-      inject: [CUSTOMER_REPOSITORY],
+      inject: [DYNAMO_DB_CUSTOMERS_REPOSITORY],
     },
     {
       provide: CREATE_CUSTOMER_USECASE,
