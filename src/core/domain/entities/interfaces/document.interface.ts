@@ -31,7 +31,7 @@ export type DocumentAttributes = Omit<DocumentInterface, 'isExpired'>;
 export interface PersistedDocumentInterface
   extends Omit<DocumentInterface, 'isExpired'> {
   readonly id: string;
-  readonly updatedAt: Date;
   readonly createdAt: Date;
+  readonly updatedAt: Date | null;
   readonly deletedAt: Date | null;
 }

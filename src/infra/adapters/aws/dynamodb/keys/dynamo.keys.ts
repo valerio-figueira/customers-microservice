@@ -17,7 +17,7 @@ export class DynamoKeys {
    *   - Não requer GSI (Global Secondary Index)
    *
    * Chaves:
-   *   - PK: CUSTOMER_EMAIL#{email}
+   *   - PK: CUSTOMER#EMAIL#{email}
    *   - SK: UNIQUE
    */
   static customerEmailPK = (email: string): string => `CUSTOMER#EMAIL#${email}`;
@@ -28,7 +28,7 @@ export class DynamoKeys {
    *
    * Chaves:
    *    - PK: CUSTOMER#{customerId}
-   *    - SK: DOCUMENT_ID#{documentId}
+   *    - SK: DOCUMENT#ID#{documentId}
    */
   static documentPK = (customerId: string): string => `CUSTOMER#${customerId}`;
   static documentSK = (documentId: string): string =>

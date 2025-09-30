@@ -9,10 +9,11 @@ import {
   DocumentTypes,
   PersistedDocumentInterface,
 } from '../../../../../core/domain/entities/interfaces/document.interface';
-import { DocumentMapper } from '../../../../mappers/document.mapper';
 import { DynamoDbAdapter } from '../dynamo-db.adapter';
 import { DynamoKeys } from '../keys/dynamo.keys';
 import { RepositoryInternalError } from '../../../../../core/app/exceptions/repository-internal.error';
+import { DynamoPutFactory } from '../factories/dynamo-put.factory';
+import { DocumentSchema } from '../schemas/document.schema';
 
 export class DynamoDbDocumentsRepository
   implements DocumentRepositoryInterface
@@ -24,70 +25,16 @@ export class DynamoDbDocumentsRepository
   public async save(
     document: DocumentInterface,
   ): Promise<PersistedDocumentInterface> {
-    const { id, customerId, type, value } = document;
+    const { id, customerId } = document;
 
     await this.dynamoDb.transactWriteItem([
-      {
-        Put: {
-          TableName: this.tableName,
-          Item: marshall({
-            PK: DynamoKeys.documentPK(customerId),
-            SK: DynamoKeys.documentSK(id),
-            itemType: 'Document',
-            ...DocumentMapper.toPersistence(document),
-          }),
-          ConditionExpression:
-            'attribute_not_exists(PK) AND attribute_not_exists(SK)', // evita sobrescrever
-        },
-      },
-      {
-        Put: {
-          TableName: this.tableName,
-          Item: marshall({
-            PK: DynamoKeys.documentValuePK(value),
-            SK: DynamoKeys.documentValueSK(),
-            itemType: `DocumentValueLookup`,
-            id,
-            customerId,
-            type,
-            value,
-          }),
-          ConditionExpression:
-            'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-        },
-      },
-      {
-        Put: {
-          TableName: this.tableName,
-          Item: marshall({
-            PK: DynamoKeys.customerDocumentTypePK(customerId, type),
-            SK: DynamoKeys.customerDocumentTypeSK(),
-            itemType: 'CustomerDocumentTypeLookup',
-            id,
-            customerId,
-            type,
-            value,
-          }),
-          ConditionExpression:
-            'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-        },
-      },
-      {
-        Put: {
-          TableName: this.tableName,
-          Item: marshall({
-            PK: DynamoKeys.customerDocumentIdPK(id),
-            SK: DynamoKeys.customerDocumentIdSK(),
-            itemType: 'CustomerDocumentIdLookup',
-            id,
-            customerId,
-            type,
-            value,
-          }),
-          ConditionExpression:
-            'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-        },
-      },
+      DynamoPutFactory.buildDocument(this.tableName, document),
+      DynamoPutFactory.buildDocumentValueLookup(this.tableName, document),
+      DynamoPutFactory.buildCustomerDocumentTypeLookup(
+        this.tableName,
+        document,
+      ),
+      DynamoPutFactory.buildCustomerDocumentIdLookup(this.tableName, document),
     ]);
 
     return this.findOneOrThrow({ id, customerId });
@@ -136,7 +83,7 @@ export class DynamoDbDocumentsRepository
     });
     const output = await this.dynamoDb.getItem(command);
     if (!output) return null;
-    return <PersistedDocumentInterface>unmarshall(output);
+    return DocumentSchema.parse(unmarshall(output));
   }
 
   public async findOneOrThrow(

@@ -11,11 +11,11 @@ import {
 } from '../../../../../core/domain/entities/interfaces/customer.interface';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { CustomerMapper } from '../../../../mappers/customer.mapper';
-import { DocumentMapper } from '../../../../mappers/document.mapper';
 import { RepositoryInternalError } from '../../../../../core/app/exceptions/repository-internal.error';
 import { PersistedDocumentInterface } from '../../../../../core/domain/entities/interfaces/document.interface';
 import { DynamoDbAdapter } from '../dynamo-db.adapter';
 import { DynamoKeys } from '../keys/dynamo.keys';
+import { DynamoPutFactory } from '../factories/dynamo-put.factory';
 
 export class DynamodbCustomersRepository
   implements CustomerRepositoryInterface
@@ -25,105 +25,18 @@ export class DynamodbCustomersRepository
   constructor(private readonly dynamoDb: DynamoDbAdapter) {}
 
   public async save(customer: CustomerInterface): Promise<CustomerInterface> {
-    const customerPersistence = CustomerMapper.toPersistence(customer);
+    const persistence = CustomerMapper.toPersistence(customer);
 
     // Cria transação (Customer + E-mail Policy + Documents)
     await this.dynamoDb.transactWriteItem(<TransactWriteItem[]>[
-      {
-        Put: {
-          TableName: this.tableName,
-          Item: marshall({
-            PK: DynamoKeys.customerPK(customer.id),
-            SK: DynamoKeys.customerSK(customer.id),
-            itemType: 'Customer',
-            ...customerPersistence,
-            dateOfBirth: customerPersistence.dateOfBirth.toISOString(),
-            createdAt: new Date().toISOString(),
-            updatedAt: null,
-            deletedAt: null,
-          }),
-          ConditionExpression:
-            'attribute_not_exists(PK) AND attribute_not_exists(SK)', // evita sobrescrever
-        },
-      },
-      {
-        Put: {
-          TableName: this.tableName,
-          Item: marshall({
-            PK: DynamoKeys.customerEmailPK(customer.email.value),
-            SK: DynamoKeys.customerEmailSK(),
-            itemType: 'CustomerEmailLookup',
-          }),
-          ConditionExpression:
-            'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-        },
-      },
+      DynamoPutFactory.buildCustomer(this.tableName, persistence),
+      DynamoPutFactory.buildCustomerEmailLookup(this.tableName, persistence),
       ...customer.documents.flatMap((doc) => {
         return [
-          {
-            Put: {
-              TableName: this.tableName,
-              Item: marshall({
-                PK: DynamoKeys.documentPK(customer.id),
-                SK: DynamoKeys.documentSK(doc.id),
-                itemType: 'Document',
-                ...DocumentMapper.toPersistence(doc),
-                createdAt: new Date().toISOString(),
-                updatedAt: null,
-                deletedAt: null,
-              }),
-              ConditionExpression:
-                'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-            },
-          },
-          {
-            Put: {
-              TableName: this.tableName,
-              Item: marshall({
-                PK: DynamoKeys.documentValuePK(doc.value),
-                SK: DynamoKeys.documentValueSK(),
-                itemType: `DocumentValueLookup`,
-                id: doc.id,
-                customerId: customer.id,
-                type: doc.type,
-                value: doc.value,
-              }),
-              ConditionExpression:
-                'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-            },
-          },
-          {
-            Put: {
-              TableName: this.tableName,
-              Item: marshall({
-                PK: DynamoKeys.customerDocumentTypePK(doc.customerId, doc.type),
-                SK: DynamoKeys.customerDocumentTypeSK(),
-                itemType: 'CustomerDocumentTypeLookup',
-                id: doc.id,
-                customerId: customer.id,
-                type: doc.type,
-                value: doc.value,
-              }),
-              ConditionExpression:
-                'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-            },
-          },
-          {
-            Put: {
-              TableName: this.tableName,
-              Item: marshall({
-                PK: DynamoKeys.customerDocumentIdPK(doc.id),
-                SK: DynamoKeys.customerDocumentIdSK(),
-                itemType: 'CustomerDocumentIdLookup',
-                id: doc.id,
-                customerId: customer.id,
-                type: doc.type,
-                value: doc.value,
-              }),
-              ConditionExpression:
-                'attribute_not_exists(PK) AND attribute_not_exists(SK)',
-            },
-          },
+          DynamoPutFactory.buildDocument(this.tableName, doc),
+          DynamoPutFactory.buildDocumentValueLookup(this.tableName, doc),
+          DynamoPutFactory.buildCustomerDocumentTypeLookup(this.tableName, doc),
+          DynamoPutFactory.buildCustomerDocumentIdLookup(this.tableName, doc),
         ];
       }),
     ]);
